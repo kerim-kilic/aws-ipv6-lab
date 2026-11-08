@@ -1,0 +1,660 @@
+ curl: (28) Connection timed out after 5003 milliseconds
+[  511.617210] lab-checks[29026]: 000 via   connect=0.000000s total=5.003573s
+[  518.629807] lab-checks[29026]: github.com #5  curl: (28) Connection timed out after 5003 milliseconds
+[  518.631458] lab-checks[29026]: 000 via   connect=0.000000s total=5.003167s
+[  525.640854] lab-checks[29026]: github.com #6  curl: (28) Connection timed out after 5002 milliseconds
+[  525.642506] lab-checks[29026]: 000 via   connect=0.000000s total=5.002841s
+[  527.644378] lab-checks[29026]: $ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+[  557.650694] lab-checks[29026]: [exit 124, 30003 ms]
+[  557.651055] lab-checks[29026]: == AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+[  557.651253] lab-checks[29026]: $ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[  558.121338] lab-checks[29026]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[  558.205247] lab-checks[29026]: [exit 0, 548 ms]
+[  558.206225] lab-checks[29026]: == AWS CLI, default endpoints (metadata over IPv6)
+[  558.207652] lab-checks[29026]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[  563.651065] lab-checks[29026]: aws: [ERROR]: Connect timeout on endpoint URL: "https://sts.us-east-1.amazonaws.com/"
+[  563.728403] lab-checks[29026]: [exit 255, 5521 ms]
+[  563.728627] lab-checks[29026]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[  604.236678] lab-checks[29026]: aws: [ERROR]: Connect timeout on endpoint URL: "https://aws-ipv6-lab-results-EXAMPLE1.s3.us-east-1.amazonaws.com/?list-type=2&encoding-type=url"
+[  604.324330] lab-checks[29026]: [exit 255, 40591 ms]
+[  604.324548] lab-checks[29026]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[  609.803540] lab-checks[29026]: aws: [ERROR]: Connect timeout on endpoint URL: "https://ssm.us-east-1.amazonaws.com/"
+[  609.890667] lab-checks[29026]: [exit 255, 5559 ms]
+[  609.890838] lab-checks[29026]: == AWS CLI, dual-stack endpoints (metadata over IPv6)
+[  609.891078] lab-checks[29026]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[  610.355651] lab-checks[29026]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[  610.430628] lab-checks[29026]: [exit 0, 534 ms]
+[  610.430847] lab-checks[29026]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[  610.942404] lab-checks[29026]: None
+[  610.943179] lab-checks[29026]: None
+[  611.018054] lab-checks[29026]: [exit 0, 582 ms]
+[  611.019082] lab-checks[29026]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[  611.496853] lab-checks[29026]: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[  611.571849] lab-checks[29026]: [exit 0, 552 ms]
+[  611.572839] lab-checks[29026]: == Packages and time
+[  611.573771] lab-checks[29026]: $ timeout 120 dnf -q makecache --refresh
+[  612.410995] lab-checks[29026]: [exit 0, 837 ms]
+[  612.411370] lab-checks[29026]: $ chronyc -n sources
+[  612.415083] lab-checks[29026]: MS Name/IP address         Stratum Poll Reach LastRx Last sample
+[  612.415196] lab-checks[29026]: ===============================================================================
+[  612.415406] lab-checks[29026]: ^* fd00:ec2::123                 3   4   377     2    -20us[  -31us] +/-  414us
+[  612.415624] lab-checks[29026]: ^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   6   377    50  +5600ns[-1737ns] +/-  773us
+[  612.415823] lab-checks[29026]: ^- 2001:db8:16:1:f191:59e4:8a22:4973   4   6   377    50  -2923ns[  -10us] +/-  614us
+[  612.416029] lab-checks[29026]: ^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   6   377    48    +21us[  +13us] +/-  626us
+[  612.416240] lab-checks[29026]: ^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   6   377    51    -32us[  -49us] +/-  782us
+[  612.426440] lab-checks[29026]: [exit 0, 12 ms]
+[  612.428324] lab-checks[29026]: finished=20261108T125613Z
+[  804.501148] lab-checks[29475]: step=3-nat64 instance=aws-ipv6-lab-control started=20261108T125925Z
+[  804.502929] lab-checks[29475]: == Instance
+[  804.503782] lab-checks[29475]: $ cat /etc/amazon-linux-release
+[  804.504862] lab-checks[29475]: Amazon Linux release 2023.12.20261102 (Amazon Linux)
+[  804.506540] lab-checks[29475]: [exit 0, 2 ms]
+[  804.506637] lab-checks[29475]: $ hostname -f
+[  804.508506] lab-checks[29475]: i-EXAMPLE2.ec2.internal
+[  804.510523] lab-checks[29475]: [exit 0, 6 ms]
+[  804.511414] lab-checks[29475]: $ ip -brief address
+[  804.514445] lab-checks[29475]: lo               UNKNOWN        127.0.0.1/8 ::1/128
+[  804.518319] lab-checks[29475]: ens5             UP             10.30.0.45/28 metric 512 2001:db8:1:20:f0bb:42f0:3b41:5e76/128 fe80::10ff:c8ff:fee2:6e9d/64
+[  804.521924] lab-checks[29475]: docker0          DOWN           172.17.0.1/16
+[  804.522047] lab-checks[29475]: [exit 0, 9 ms]
+[  804.523965] lab-checks[29475]: $ ip -6 route
+[  804.527080] lab-checks[29475]: 2001:db8:1:20::/64 dev ens5 proto ra metric 512 pref medium
+[  804.527207] lab-checks[29475]: fe80::/64 dev ens5 proto kernel metric 256 pref medium
+[  804.527409] lab-checks[29475]: default via fe80::10ff:f2ff:fea7:c639 dev ens5 proto ra metric 512 expires 1791sec pref medium
+[  804.534938] lab-checks[29475]: [exit 0, 7 ms]
+[  804.535096] lab-checks[29475]: $ ip -4 route
+[  804.538117] lab-checks[29475]: default via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[  804.538265] lab-checks[29475]: 10.30.0.2 via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[  804.538447] lab-checks[29475]: 10.30.0.32/28 dev ens5 proto kernel scope link src 10.30.0.45 metric 512
+[  804.538651] lab-checks[29475]: 10.30.0.33 dev ens5 proto dhcp scope link src 10.30.0.45 metric 512
+[  804.538860] lab-checks[29475]: 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+[  804.548876] lab-checks[29475]: [exit 0, 13 ms]
+[  804.549141] lab-checks[29475]: $ cat /etc/resolv.conf
+[  804.551913] lab-checks[29475]: # This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+[  804.552040] lab-checks[29475]: # Do not edit.
+[  804.552235] lab-checks[29475]: #
+[  804.552437] lab-checks[29475]: # This file might be symlinked as /etc/resolv.conf. If you're looking at
+[  804.552648] lab-checks[29475]: # /etc/resolv.conf and seeing this text, you have followed the symlink.
+[  804.552853] lab-checks[29475]: #
+[  804.553057] lab-checks[29475]: # This is a dynamic resolv.conf file for connecting local clients directly to
+[  804.553263] lab-checks[29475]: # all known uplink DNS servers. This file lists all configured search domains.
+[  804.553483] lab-checks[29475]: #
+[  804.553686] lab-checks[29475]: # Third party programs should typically not access this file directly, but only
+[  804.553890] lab-checks[29475]: # through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+[  804.554099] lab-checks[29475]: # different way, replace this symlink by a static file or a different symlink.
+[  804.554304] lab-checks[29475]: #
+[  804.554513] lab-checks[29475]: # See man:systemd-resolved.service(8) for details about the supported modes of
+[  804.554719] lab-checks[29475]: # operation for /etc/resolv.conf.
+[  804.554929] lab-checks[29475]: nameserver 10.30.0.2
+[  804.555135] lab-checks[29475]: search ec2.internal
+[  804.556958] lab-checks[29475]: [exit 0, 6 ms]
+[  804.557114] lab-checks[29475]: $ resolvectl dns
+[  804.564742] lab-checks[29475]: Global:
+[  804.564983] lab-checks[29475]: Link 2 (ens5): 10.30.0.2
+[  804.565150] lab-checks[29475]: Link 3 (docker0):
+[  804.567429] lab-checks[29475]: [exit 0, 8 ms]
+[  804.567849] lab-checks[29475]: == Instance metadata
+[  804.568269] lab-checks[29475]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://[fd00:ec2::254]/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[  804.578551] lab-checks[29475]: 200
+[  804.580882] lab-checks[29475]: [exit 0, 10 ms]
+[  804.583365] lab-checks[29475]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://169.254.169.254/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[  804.593647] lab-checks[29475]: 200
+[  804.597596] lab-checks[29475]: [exit 0, 13 ms]
+[  804.598462] lab-checks[29475]: == DNS
+[  804.639299] lab-checks[29475]: github.com                               A    203.0.113.221
+[  804.639462] lab-checks[29475]: github.com                               AAAA - (Name or service not known)
+[  804.676746] lab-checks[29475]: api.github.com                           A    198.51.100.218
+[  804.678203] lab-checks[29475]: api.github.com                           AAAA - (Name or service not known)
+[  804.711194] lab-checks[29475]: pypi.org                                 A    203.0.113.7 203.0.113.8 203.0.113.9 203.0.113.10
+[  804.711344] lab-checks[29475]: pypi.org                                 AAAA 2001:db8:2::223 2001:db8:3::223 2001:db8:4::223 2001:db8:5::223
+[  804.747821] lab-checks[29475]: registry-1.docker.io                     A    203.0.113.74 203.0.113.12 203.0.113.75 203.0.113.151 198.51.100.237 203.0.113.152 203.0.113.16 198.51.100.178
+[  804.747980] lab-checks[29475]: registry-1.docker.io                     AAAA 2001:db8:6:0:4351:36ca:1fb4:57ca 2001:db8:6:1:29f2:f511:b833:5c3 2001:db8:6:1:8bdf:673c:76:b448 2001:db8:6:2:9ba3:6727:3bde:e3e0 2001:db8:6:2:9db2:a144:ea73:759e 2001:db8:6:2:9de:a0f9:a29c:7abf 2001:db8:6:2:ce3:d0c6:4f7:61e1 2001:db8:6:2:d452:6b33:acc:dc99
+[  804.794869] lab-checks[29475]: sts.us-east-1.amazonaws.com              A    203.0.113.154
+[  804.796400] lab-checks[29475]: sts.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+[  804.827952] lab-checks[29475]: sts.us-east-1.api.aws                    A    198.51.100.129
+[  804.828109] lab-checks[29475]: sts.us-east-1.api.aws                    AAAA 2001:db8:7:a1:d67a:b551:3452:acf7
+[  804.867703] lab-checks[29475]: s3.us-east-1.amazonaws.com               A    198.51.100.88 192.0.2.3 192.0.2.4 192.0.2.5 192.0.2.6 192.0.2.7 192.0.2.8 192.0.2.9
+[  804.867873] lab-checks[29475]: s3.us-east-1.amazonaws.com               AAAA - (Name or service not known)
+[  804.907387] lab-checks[29475]: s3.dualstack.us-east-1.amazonaws.com     A    192.0.2.10 192.0.2.11 192.0.2.12 198.51.100.182 192.0.2.13 192.0.2.14 192.0.2.15 192.0.2.16
+[  804.907556] lab-checks[29475]: s3.dualstack.us-east-1.amazonaws.com     AAAA 2001:db8:8:1::100f:e463 2001:db8:9:1::100f:fc4b 2001:db8:9:1::100f:fcc9 2001:db8:9:1::100f:ffb2 2001:db8:a:1::100f:ece2 2001:db8:a:1::100f:ee15 2001:db8:a::100f:c7a0 2001:db8:b:1::100f:f42d
+[  804.950608] lab-checks[29475]: ssm.us-east-1.amazonaws.com              A    198.51.100.145
+[  804.950774] lab-checks[29475]: ssm.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+[  804.990505] lab-checks[29475]: ssm.us-east-1.api.aws                    A    192.0.2.17
+[  804.990678] lab-checks[29475]: ssm.us-east-1.api.aws                    AAAA 2001:db8:7:21:3f22:95dc:9746:d25a
+[  805.030730] lab-checks[29475]: checkip.amazonaws.com                    A    203.0.113.99 203.0.113.100 203.0.113.138 203.0.113.39 203.0.113.40 203.0.113.41 203.0.113.137 203.0.113.44
+[  805.033715] lab-checks[29475]: checkip.amazonaws.com                    AAAA - (Name or service not known)
+[  805.076139] lab-checks[29475]: api6.ipify.org                           A    - (Name or service not known)
+[  805.076310] lab-checks[29475]: api6.ipify.org                           AAAA 2001:db8:f:3c::4
+[  805.082264] lab-checks[29475]: == HTTPS
+[  810.090639] lab-checks[29475]: github.com                               curl: (28) Connection timed out after 5002 milliseconds
+[  810.092637] lab-checks[29475]: 000 via   dns=0.001072s connect=0.000000s total=5.002239s
+[  815.101996] lab-checks[29475]: api.github.com                           curl: (28) Connection timed out after 5003 milliseconds
+[  815.102379] lab-checks[29475]: 000 via   dns=0.001351s connect=0.000000s total=5.003821s
+[  815.128345] lab-checks[29475]: pypi.org                                 200 via 2001:db8:4::223  dns=0.000978s connect=0.001830s total=0.016923s
+[  815.155623] lab-checks[29475]: registry-1.docker.io                     404 via 2001:db8:6:2:d452:6b33:acc:dc99  dns=0.003750s connect=0.004561s total=0.018963s
+[  820.167627] lab-checks[29475]: sts.us-east-1.amazonaws.com              curl: (28) Connection timed out after 5003 milliseconds
+[  820.168003] lab-checks[29475]: 000 via   dns=0.001136s connect=0.000000s total=5.003620s
+[  820.195658] lab-checks[29475]: sts.us-east-1.api.aws                    302 via 2001:db8:7:a1:d67a:b551:3452:acf7  dns=0.000938s connect=0.002455s total=0.018891s
+[  825.206210] lab-checks[29475]: s3.us-east-1.amazonaws.com               curl: (28) Connection timed out after 5002 milliseconds
+[  825.208316] lab-checks[29475]: 000 via   dns=0.001422s connect=0.000000s total=5.002118s
+[  825.230366] lab-checks[29475]: s3.dualstack.us-east-1.amazonaws.com     307 via 2001:db8:9:1::100f:fd18  dns=0.001566s connect=0.002479s total=0.016760s
+[  830.242557] lab-checks[29475]: ssm.us-east-1.amazonaws.com              curl: (28) Connection timed out after 5003 milliseconds
+[  830.244570] lab-checks[29475]: 000 via   dns=0.001843s connect=0.000000s total=5.003308s
+[  830.269693] lab-checks[29475]: ssm.us-east-1.api.aws                    400 via 2001:db8:7:21:3f22:95dc:9746:d25a  dns=0.001192s connect=0.003226s total=0.018996s
+[  835.280352] lab-checks[29475]: checkip.amazonaws.com                    curl: (28) Connection timed out after 5002 milliseconds
+[  835.282429] lab-checks[29475]: 000 via   dns=0.007103s connect=0.000000s total=5.002598s
+[  835.470948] lab-checks[29475]: api6.ipify.org                           200 via 2001:db8:f:3c::4  dns=0.001299s connect=0.058524s total=0.180590s
+[  835.473743] lab-checks[29475]: == Address the internet sees
+[  835.474777] lab-checks[29475]: $ curl -sS --max-time 10 https://api6.ipify.org
+[  835.669961] lab-checks[29475]: 2001:db8:1:20:f0bb:42f0:3b41:5e76[exit 0, 193 ms]
+[  835.670219] lab-checks[29475]: $ curl -sS --max-time 10 https://checkip.amazonaws.com
+[  845.678841] lab-checks[29475]: curl: (28) Connection timed out after 10001 milliseconds
+[  845.681979] lab-checks[29475]: [exit 28, 10010 ms]
+[  845.683005] lab-checks[29475]: == GitHub
+[  850.690391] lab-checks[29475]: github.com #1  curl: (28) Connection timed out after 5002 milliseconds
+[  850.692225] lab-checks[29475]: 000 via   connect=0.000000s total=5.002856s
+[  857.700633] lab-checks[29475]: github.com #2  curl: (28) Connection timed out after 5002 milliseconds
+[  857.702555] lab-checks[29475]: 000 via   connect=0.000000s total=5.002747s
+[  864.712338] lab-checks[29475]: github.com #3  curl: (28) Connection timed out after 5003 milliseconds
+[  864.714080] lab-checks[29475]: 000 via   connect=0.000000s total=5.003197s
+[  871.724363] lab-checks[29475]: github.com #4  curl: (28) Connection timed out after 5003 milliseconds
+[  871.724740] lab-checks[29475]: 000 via   connect=0.000000s total=5.003410s
+[  878.737051] lab-checks[29475]: github.com #5  curl: (28) Connection timed out after 5002 milliseconds
+[  878.737558] lab-checks[29475]: 000 via   connect=0.000000s total=5.002867s
+[  885.749858] lab-checks[29475]: github.com #6  curl: (28) Connection timed out after 5002 milliseconds
+[  885.750132] lab-checks[29475]: 000 via   connect=0.000000s total=5.002685s
+[  887.754676] lab-checks[29475]: $ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+[  917.760118] lab-checks[29475]: [exit 124, 30003 ms]
+[  917.760542] lab-checks[29475]: == AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+[  917.760747] lab-checks[29475]: $ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[  918.220214] lab-checks[29475]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[  918.292699] lab-checks[29475]: [exit 0, 527 ms]
+[  918.293789] lab-checks[29475]: == AWS CLI, default endpoints (metadata over IPv6)
+[  918.295381] lab-checks[29475]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[  923.725216] lab-checks[29475]: aws: [ERROR]: Connect timeout on endpoint URL: "https://sts.us-east-1.amazonaws.com/"
+[  923.795372] lab-checks[29475]: [exit 255, 5500 ms]
+[  923.796410] lab-checks[29475]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[  964.286280] lab-checks[29475]: aws: [ERROR]: Connect timeout on endpoint URL: "https://aws-ipv6-lab-results-EXAMPLE1.s3.us-east-1.amazonaws.com/?list-type=2&encoding-type=url"
+[  964.369654] lab-checks[29475]: [exit 255, 40572 ms]
+[  964.369870] lab-checks[29475]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[  969.821095] lab-checks[29475]: aws: [ERROR]: Connect timeout on endpoint URL: "https://ssm.us-east-1.amazonaws.com/"
+[  969.903239] lab-checks[29475]: [exit 255, 5528 ms]
+[  969.904217] lab-checks[29475]: == AWS CLI, dual-stack endpoints (metadata over IPv6)
+[  969.905637] lab-checks[29475]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[  970.366984] lab-checks[29475]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[  970.444773] lab-checks[29475]: [exit 0, 539 ms]
+[  970.445845] lab-checks[29475]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[  970.984195] lab-checks[29475]: None
+[  970.984343] lab-checks[29475]: None
+[  971.067343] lab-checks[29475]: [exit 0, 620 ms]
+[  971.067567] lab-checks[29475]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[  971.544966] lab-checks[29475]: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[  971.623293] lab-checks[29475]: [exit 0, 554 ms]
+[  971.624261] lab-checks[29475]: == Packages and time
+[  971.625128] lab-checks[29475]: $ timeout 120 dnf -q makecache --refresh
+[  972.450996] lab-checks[29475]: [exit 0, 825 ms]
+[  972.451993] lab-checks[29475]: $ chronyc -n sources
+[  972.453998] lab-checks[29475]: MS Name/IP address         Stratum Poll Reach LastRx Last sample
+[  972.455458] lab-checks[29475]: ===============================================================================
+[  972.457134] lab-checks[29475]: ^* fd00:ec2::123                 3   4   377     6  -2728ns[-3766ns] +/-  425us
+[  972.458810] lab-checks[29475]: ^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   6   377    22    -23us[  -24us] +/-  779us
+[  972.460601] lab-checks[29475]: ^- 2001:db8:16:1:f191:59e4:8a22:4973   4   6   377    23    -42us[  -43us] +/-  629us
+[  972.462374] lab-checks[29475]: ^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   6   377    22    -15us[  -16us] +/-  637us
+[  972.464134] lab-checks[29475]: ^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   6   377    23    -33us[  -34us] +/-  774us
+[  972.465950] lab-checks[29475]: [exit 0, 3 ms]
+[  972.466735] lab-checks[29475]: finished=20261108T130213Z
+[ 1164.498844] lab-checks[29912]: step=3-nat64 instance=aws-ipv6-lab-control started=20261108T130525Z
+[ 1164.499050] lab-checks[29912]: == Instance
+[ 1164.499249] lab-checks[29912]: $ cat /etc/amazon-linux-release
+[ 1164.503992] lab-checks[29912]: Amazon Linux release 2023.12.20261102 (Amazon Linux)
+[ 1164.506920] lab-checks[29912]: [exit 0, 4 ms]
+[ 1164.507159] lab-checks[29912]: $ hostname -f
+[ 1164.513519] lab-checks[29912]: i-EXAMPLE2.ec2.internal
+[ 1164.517121] lab-checks[29912]: [exit 0, 5 ms]
+[ 1164.518336] lab-checks[29912]: $ ip -brief address
+[ 1164.522594] lab-checks[29912]: lo               UNKNOWN        127.0.0.1/8 ::1/128
+[ 1164.524406] lab-checks[29912]: ens5             UP             10.30.0.45/28 metric 512 2001:db8:1:20:f0bb:42f0:3b41:5e76/128 fe80::10ff:c8ff:fee2:6e9d/64
+[ 1164.528277] lab-checks[29912]: docker0          DOWN           172.17.0.1/16
+[ 1164.528399] lab-checks[29912]: [exit 0, 5 ms]
+[ 1164.528441] lab-checks[29912]: $ ip -6 route
+[ 1164.531146] lab-checks[29912]: 2001:db8:1:20::/64 dev ens5 proto ra metric 512 pref medium
+[ 1164.532614] lab-checks[29912]: fe80::/64 dev ens5 proto kernel metric 256 pref medium
+[ 1164.533950] lab-checks[29912]: default via fe80::10ff:f2ff:fea7:c639 dev ens5 proto ra metric 512 expires 1795sec pref medium
+[ 1164.540213] lab-checks[29912]: [exit 0, 9 ms]
+[ 1164.540371] lab-checks[29912]: $ ip -4 route
+[ 1164.543486] lab-checks[29912]: default via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[ 1164.543674] lab-checks[29912]: 10.30.0.2 via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[ 1164.543918] lab-checks[29912]: 10.30.0.32/28 dev ens5 proto kernel scope link src 10.30.0.45 metric 512
+[ 1164.544123] lab-checks[29912]: 10.30.0.33 dev ens5 proto dhcp scope link src 10.30.0.45 metric 512
+[ 1164.544385] lab-checks[29912]: 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+[ 1164.551373] lab-checks[29912]: [exit 0, 12 ms]
+[ 1164.551622] lab-checks[29912]: $ cat /etc/resolv.conf
+[ 1164.554209] lab-checks[29912]: # This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+[ 1164.554329] lab-checks[29912]: # Do not edit.
+[ 1164.554527] lab-checks[29912]: #
+[ 1164.554728] lab-checks[29912]: # This file might be symlinked as /etc/resolv.conf. If you're looking at
+[ 1164.554935] lab-checks[29912]: # /etc/resolv.conf and seeing this text, you have followed the symlink.
+[ 1164.555141] lab-checks[29912]: #
+[ 1164.555349] lab-checks[29912]: # This is a dynamic resolv.conf file for connecting local clients directly to
+[ 1164.555556] lab-checks[29912]: # all known uplink DNS servers. This file lists all configured search domains.
+[ 1164.555761] lab-checks[29912]: #
+[ 1164.555963] lab-checks[29912]: # Third party programs should typically not access this file directly, but only
+[ 1164.556169] lab-checks[29912]: # through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+[ 1164.556383] lab-checks[29912]: # different way, replace this symlink by a static file or a different symlink.
+[ 1164.556592] lab-checks[29912]: #
+[ 1164.556801] lab-checks[29912]: # See man:systemd-resolved.service(8) for details about the supported modes of
+[ 1164.557007] lab-checks[29912]: # operation for /etc/resolv.conf.
+[ 1164.557217] lab-checks[29912]: nameserver 10.30.0.2
+[ 1164.557419] lab-checks[29912]: search ec2.internal
+[ 1164.559391] lab-checks[29912]: [exit 0, 6 ms]
+[ 1164.559824] lab-checks[29912]: $ resolvectl dns
+[ 1164.569100] lab-checks[29912]: Global:
+[ 1164.569227] lab-checks[29912]: Link 2 (ens5): 10.30.0.2
+[ 1164.569394] lab-checks[29912]: Link 3 (docker0):
+[ 1164.571676] lab-checks[29912]: [exit 0, 10 ms]
+[ 1164.572292] lab-checks[29912]: == Instance metadata
+[ 1164.572355] lab-checks[29912]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://[fd00:ec2::254]/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[ 1164.581741] lab-checks[29912]: 200
+[ 1164.584267] lab-checks[29912]: [exit 0, 10 ms]
+[ 1164.584397] lab-checks[29912]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://169.254.169.254/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[ 1164.599385] lab-checks[29912]: 200
+[ 1164.603808] lab-checks[29912]: [exit 0, 10 ms]
+[ 1164.603946] lab-checks[29912]: == DNS
+[ 1164.642693] lab-checks[29912]: github.com                               A    198.51.100.18
+[ 1164.644092] lab-checks[29912]: github.com                               AAAA - (Name or service not known)
+[ 1164.677897] lab-checks[29912]: api.github.com                           A    203.0.113.73
+[ 1164.679798] lab-checks[29912]: api.github.com                           AAAA - (Name or service not known)
+[ 1164.712204] lab-checks[29912]: pypi.org                                 A    203.0.113.7 203.0.113.8 203.0.113.9 203.0.113.10
+[ 1164.712350] lab-checks[29912]: pypi.org                                 AAAA 2001:db8:2::223 2001:db8:3::223 2001:db8:4::223 2001:db8:5::223
+[ 1164.745767] lab-checks[29912]: registry-1.docker.io                     A    203.0.113.150 198.51.100.219 198.51.100.74 198.51.100.177 198.51.100.127 198.51.100.76 203.0.113.16 203.0.113.18
+[ 1164.748406] lab-checks[29912]: registry-1.docker.io                     AAAA 2001:db8:6:0:87bf:87ba:2445:a26c 2001:db8:6:0:bf6f:b91f:d5d:ee60 2001:db8:6:1:28c9:f649:1555:473 2001:db8:6:1:435e:7bde:e3dc:cb1b 2001:db8:6:1:a807:337e:933e:cbb8 2001:db8:6:1:c447:b014:4fac:bd8d 2001:db8:6:2:8a0:f78d:280d:141e 2001:db8:6:2:9de:a0f9:a29c:7abf
+[ 1164.782398] lab-checks[29912]: sts.us-east-1.amazonaws.com              A    203.0.113.81
+[ 1164.782563] lab-checks[29912]: sts.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+[ 1164.818169] lab-checks[29912]: sts.us-east-1.api.aws                    A    203.0.113.19
+[ 1164.819617] lab-checks[29912]: sts.us-east-1.api.aws                    AAAA 2001:db8:7:60:7a67:be26:82e2:ea35
+[ 1164.853164] lab-checks[29912]: s3.us-east-1.amazonaws.com               A    192.0.2.18 203.0.113.165 192.0.2.19 192.0.2.20 192.0.2.21 192.0.2.22 192.0.2.23 192.0.2.24
+[ 1164.856752] lab-checks[29912]: s3.us-east-1.amazonaws.com               AAAA - (Name or service not known)
+[ 1164.892609] lab-checks[29912]: s3.dualstack.us-east-1.amazonaws.com     A    192.0.2.25 192.0.2.26 192.0.2.27 192.0.2.28 192.0.2.29 192.0.2.30 192.0.2.31 192.0.2.32
+[ 1164.895535] lab-checks[29912]: s3.dualstack.us-east-1.amazonaws.com     AAAA 2001:db8:9:1::100f:fc5e 2001:db8:9:1::100f:fcac 2001:db8:9:1::100f:ff49 2001:db8:a:1::100f:ecab 2001:db8:a:1::100f:edf8 2001:db8:a:1::100f:ef93 2001:db8:c:1::100f:d77c 2001:db8:17::100f:a7ad
+[ 1164.928995] lab-checks[29912]: ssm.us-east-1.amazonaws.com              A    192.0.2.33
+[ 1164.929167] lab-checks[29912]: ssm.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+[ 1164.967169] lab-checks[29912]: ssm.us-east-1.api.aws                    A    192.0.2.34
+[ 1164.967339] lab-checks[29912]: ssm.us-east-1.api.aws                    AAAA 2001:db8:7:c1:4d4f:5de:1209:b2b4
+[ 1165.004383] lab-checks[29912]: checkip.amazonaws.com                    A    203.0.113.38 203.0.113.99 203.0.113.138 203.0.113.39 203.0.113.40 203.0.113.43 203.0.113.44 203.0.113.45
+[ 1165.004546] lab-checks[29912]: checkip.amazonaws.com                    AAAA - (Name or service not known)
+[ 1165.042016] lab-checks[29912]: api6.ipify.org                           A    - (Name or service not known)
+[ 1165.042174] lab-checks[29912]: api6.ipify.org                           AAAA 2001:db8:f:3c::4
+[ 1165.049372] lab-checks[29912]: == HTTPS
+[ 1165.082523] lab-checks[29912]: github.com                               200 via 198.51.100.18  dns=0.001542s connect=0.003602s total=0.027042s
+[ 1165.108419] lab-checks[29912]: api.github.com                           200 via 203.0.113.73  dns=0.001098s connect=0.003099s total=0.017651s
+[ 1165.135539] lab-checks[29912]: pypi.org                                 200 via 2001:db8:3::223  dns=0.004123s connect=0.004780s total=0.018913s
+[ 1165.160909] lab-checks[29912]: registry-1.docker.io                     404 via 2001:db8:6:2:9de:a0f9:a29c:7abf  dns=0.000680s connect=0.001516s total=0.017052s
+[ 1165.188121] lab-checks[29912]: sts.us-east-1.amazonaws.com              302 via 203.0.113.81  dns=0.001288s connect=0.003983s total=0.018522s
+[ 1165.212451] lab-checks[29912]: sts.us-east-1.api.aws                    302 via 2001:db8:7:60:7a67:be26:82e2:ea35  dns=0.000727s connect=0.001978s total=0.015967s
+[ 1165.237959] lab-checks[29912]: s3.us-east-1.amazonaws.com               307 via 192.0.2.24  dns=0.001175s connect=0.002328s total=0.016660s
+[ 1165.261970] lab-checks[29912]: s3.dualstack.us-east-1.amazonaws.com     307 via 2001:db8:c:1::100f:d77c  dns=0.001368s connect=0.001905s total=0.015842s
+[ 1165.287037] lab-checks[29912]: ssm.us-east-1.amazonaws.com              400 via 198.51.100.94  dns=0.001243s connect=0.003079s total=0.016656s
+[ 1165.310964] lab-checks[29912]: ssm.us-east-1.api.aws                    400 via 2001:db8:7:c1:4d4f:5de:1209:b2b4  dns=0.000524s connect=0.002210s total=0.015835s
+[ 1165.334614] lab-checks[29912]: checkip.amazonaws.com                    200 via 203.0.113.100  dns=0.001292s connect=0.002510s total=0.015039s
+[ 1165.522454] lab-checks[29912]: api6.ipify.org                           200 via 2001:db8:f:3c::4  dns=0.001032s connect=0.057832s total=0.179021s
+[ 1165.524887] lab-checks[29912]: == Address the internet sees
+[ 1165.525951] lab-checks[29912]: $ curl -sS --max-time 10 https://api6.ipify.org
+[ 1165.745887] lab-checks[29912]: 2001:db8:1:20:f0bb:42f0:3b41:5e76[exit 0, 218 ms]
+[ 1165.747328] lab-checks[29912]: $ curl -sS --max-time 10 https://checkip.amazonaws.com
+[ 1165.767080] lab-checks[29912]: 198.51.100.95
+[ 1165.770167] lab-checks[29912]: [exit 0, 22 ms]
+[ 1165.770307] lab-checks[29912]: == GitHub
+[ 1165.806688] lab-checks[29912]: github.com #1  200 via 198.51.100.18  connect=0.003390s total=0.029612s
+[ 1167.842889] lab-checks[29912]: github.com #2  200 via 198.51.100.18  connect=0.003826s total=0.026064s
+[ 1169.886682] lab-checks[29912]: github.com #3  200 via 198.51.100.18  connect=0.007049s total=0.034299s
+[ 1171.925186] lab-checks[29912]: github.com #4  200 via 198.51.100.18  connect=0.003396s total=0.028908s
+[ 1173.967493] lab-checks[29912]: github.com #5  200 via 198.51.100.18  connect=0.006705s total=0.032790s
+[ 1176.016090] lab-checks[29912]: github.com #6  200 via 198.51.100.18  connect=0.010737s total=0.038953s
+[ 1178.019756] lab-checks[29912]: $ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+[ 1178.129247] lab-checks[29912]: 1cf6ad2721b8393e545fffaf1c714cfb45da8b86	refs/heads/dev
+[ 1178.130747] lab-checks[29912]: b686ee50a47320dd31e2483fffb94d65600fca4c	refs/heads/main
+[ 1178.132208] lab-checks[29912]: [exit 0, 110 ms]
+[ 1178.133036] lab-checks[29912]: == AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+[ 1178.134399] lab-checks[29912]: $ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1178.590914] lab-checks[29912]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1178.666845] lab-checks[29912]: [exit 0, 533 ms]
+[ 1178.667771] lab-checks[29912]: == AWS CLI, default endpoints (metadata over IPv6)
+[ 1178.669034] lab-checks[29912]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1179.124730] lab-checks[29912]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1179.202782] lab-checks[29912]: [exit 0, 534 ms]
+[ 1179.202991] lab-checks[29912]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[ 1179.722071] lab-checks[29912]: None
+[ 1179.722236] lab-checks[29912]: None
+[ 1179.812566] lab-checks[29912]: [exit 0, 607 ms]
+[ 1179.813617] lab-checks[29912]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1180.320119] lab-checks[29912]: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1180.417125] lab-checks[29912]: [exit 0, 602 ms]
+[ 1180.418492] lab-checks[29912]: == AWS CLI, dual-stack endpoints (metadata over IPv6)
+[ 1180.419980] lab-checks[29912]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1180.876370] lab-checks[29912]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1180.952936] lab-checks[29912]: [exit 0, 533 ms]
+[ 1180.953954] lab-checks[29912]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[ 1181.484448] lab-checks[29912]: None
+[ 1181.485243] lab-checks[29912]: None
+[ 1181.567775] lab-checks[29912]: [exit 0, 613 ms]
+[ 1181.568801] lab-checks[29912]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1182.082069] lab-checks[29912]: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1182.167341] lab-checks[29912]: [exit 0, 598 ms]
+[ 1182.168451] lab-checks[29912]: == Packages and time
+[ 1182.169532] lab-checks[29912]: $ timeout 120 dnf -q makecache --refresh
+[ 1182.992432] lab-checks[29912]: [exit 0, 823 ms]
+[ 1182.993590] lab-checks[29912]: $ chronyc -n sources
+[ 1182.996155] lab-checks[29912]: MS Name/IP address         Stratum Poll Reach LastRx Last sample
+[ 1182.997771] lab-checks[29912]: ===============================================================================
+[ 1182.999455] lab-checks[29912]: ^* fd00:ec2::123                 3   4   377     6   -123us[ -126us] +/-  555us
+[ 1183.001142] lab-checks[29912]: ^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   7   377    38  -7137ns[-7663ns] +/-  762us
+[ 1183.002920] lab-checks[29912]: ^- 2001:db8:16:1:f191:59e4:8a22:4973   4   6   377    39    -16us[  -16us] +/-  592us
+[ 1183.004927] lab-checks[29912]: ^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   7   377    37  +2321ns[  +52ns] +/-  621us
+[ 1183.006764] lab-checks[29912]: ^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   7   377    40    -15us[  -15us] +/-  814us
+[ 1183.008655] lab-checks[29912]: [exit 0, 4 ms]
+[ 1183.009458] lab-checks[29912]: finished=20261108T130543Z
+2026/11/08 13:08:26Z: Amazon SSM Agent v3.3.5700.0 is running
+2026/11/08 13:08:26Z: OsProductName: Amazon Linux
+2026/11/08 13:08:26Z: OsVersion: 2023
+[ 1524.502302] lab-checks[30309]: step=3-nat64 instance=aws-ipv6-lab-control started=20261108T131125Z
+[ 1524.502481] lab-checks[30309]: == Instance
+[ 1524.502674] lab-checks[30309]: $ cat /etc/amazon-linux-release
+[ 1524.502885] lab-checks[30309]: Amazon Linux release 2023.12.20261102 (Amazon Linux)
+[ 1524.503104] lab-checks[30309]: [exit 0, 2 ms]
+[ 1524.503312] lab-checks[30309]: $ hostname -f
+[ 1524.506071] lab-checks[30309]: i-EXAMPLE2.ec2.internal
+[ 1524.508602] lab-checks[30309]: [exit 0, 8 ms]
+[ 1524.509020] lab-checks[30309]: $ ip -brief address
+[ 1524.512670] lab-checks[30309]: lo               UNKNOWN        127.0.0.1/8 ::1/128
+[ 1524.512806] lab-checks[30309]: ens5             UP             10.30.0.45/28 metric 512 2001:db8:1:20:f0bb:42f0:3b41:5e76/128 fe80::10ff:c8ff:fee2:6e9d/64
+[ 1524.513049] lab-checks[30309]: docker0          DOWN           172.17.0.1/16
+[ 1524.521038] lab-checks[30309]: [exit 0, 10 ms]
+[ 1524.521201] lab-checks[30309]: $ ip -6 route
+[ 1524.526148] lab-checks[30309]: 2001:db8:1:20::/64 dev ens5 proto ra metric 512 pref medium
+[ 1524.527998] lab-checks[30309]: fe80::/64 dev ens5 proto kernel metric 256 pref medium
+[ 1524.528111] lab-checks[30309]: default via fe80::10ff:f2ff:fea7:c639 dev ens5 proto ra metric 512 expires 1798sec pref medium
+[ 1524.530070] lab-checks[30309]: [exit 0, 5 ms]
+[ 1524.530240] lab-checks[30309]: $ ip -4 route
+[ 1524.533079] lab-checks[30309]: default via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[ 1524.533533] lab-checks[30309]: 10.30.0.2 via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[ 1524.533620] lab-checks[30309]: 10.30.0.32/28 dev ens5 proto kernel scope link src 10.30.0.45 metric 512
+[ 1524.533814] lab-checks[30309]: 10.30.0.33 dev ens5 proto dhcp scope link src 10.30.0.45 metric 512
+[ 1524.534023] lab-checks[30309]: 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+[ 1524.535689] lab-checks[30309]: [exit 0, 4 ms]
+[ 1524.537181] lab-checks[30309]: $ cat /etc/resolv.conf
+[ 1524.538621] lab-checks[30309]: # This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+[ 1524.538726] lab-checks[30309]: # Do not edit.
+[ 1524.538920] lab-checks[30309]: #
+[ 1524.539131] lab-checks[30309]: # This file might be symlinked as /etc/resolv.conf. If you're looking at
+[ 1524.539343] lab-checks[30309]: # /etc/resolv.conf and seeing this text, you have followed the symlink.
+[ 1524.539549] lab-checks[30309]: #
+[ 1524.539772] lab-checks[30309]: # This is a dynamic resolv.conf file for connecting local clients directly to
+[ 1524.539984] lab-checks[30309]: # all known uplink DNS servers. This file lists all configured search domains.
+[ 1524.541744] lab-checks[30309]: #
+[ 1524.541933] lab-checks[30309]: # Third party programs should typically not access this file directly, but only
+[ 1524.542146] lab-checks[30309]: # through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+[ 1524.542350] lab-checks[30309]: # different way, replace this symlink by a static file or a different symlink.
+[ 1524.542556] lab-checks[30309]: #
+[ 1524.542773] lab-checks[30309]: # See man:systemd-resolved.service(8) for details about the supported modes of
+[ 1524.542985] lab-checks[30309]: # operation for /etc/resolv.conf.
+[ 1524.543192] lab-checks[30309]: nameserver 10.30.0.2
+[ 1524.543403] lab-checks[30309]: search ec2.internal
+[ 1524.545073] lab-checks[30309]: [exit 0, 4 ms]
+[ 1524.545170] lab-checks[30309]: $ resolvectl dns
+[ 1524.551612] lab-checks[30309]: Global:
+[ 1524.551873] lab-checks[30309]: Link 2 (ens5): 10.30.0.2
+[ 1524.552054] lab-checks[30309]: Link 3 (docker0):
+[ 1524.554280] lab-checks[30309]: [exit 0, 8 ms]
+[ 1524.554598] lab-checks[30309]: == Instance metadata
+[ 1524.554831] lab-checks[30309]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://[fd00:ec2::254]/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[ 1524.569876] lab-checks[30309]: 200
+[ 1524.575179] lab-checks[30309]: [exit 0, 15 ms]
+[ 1524.575323] lab-checks[30309]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://169.254.169.254/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[ 1524.582786] lab-checks[30309]: 200
+[ 1524.585018] lab-checks[30309]: [exit 0, 9 ms]
+[ 1524.585283] lab-checks[30309]: == DNS
+[ 1524.630872] lab-checks[30309]: github.com                               A    203.0.113.221
+[ 1524.631032] lab-checks[30309]: github.com                               AAAA - (Name or service not known)
+[ 1524.669662] lab-checks[30309]: api.github.com                           A    203.0.113.246
+[ 1524.671517] lab-checks[30309]: api.github.com                           AAAA - (Name or service not known)
+[ 1524.703043] lab-checks[30309]: pypi.org                                 A    203.0.113.7 203.0.113.8 203.0.113.9 203.0.113.10
+[ 1524.703189] lab-checks[30309]: pypi.org                                 AAAA 2001:db8:2::223 2001:db8:3::223 2001:db8:4::223 2001:db8:5::223
+[ 1524.735738] lab-checks[30309]: registry-1.docker.io                     A    192.0.2.43 203.0.113.77 198.51.100.77 198.51.100.238 203.0.113.152 203.0.113.79 203.0.113.80 203.0.113.17
+[ 1524.738555] lab-checks[30309]: registry-1.docker.io                     AAAA 2001:db8:6:0:4c42:fa9c:215d:b2d2 2001:db8:6:1:29f2:f511:b833:5c3 2001:db8:6:1:2de0:8354:c9f9:e103 2001:db8:6:1:435e:7bde:e3dc:cb1b 2001:db8:6:1:fdcd:f411:5f82:aee9 2001:db8:6:2:9db2:a144:ea73:759e 2001:db8:6:2:9de:a0f9:a29c:7abf 2001:db8:6:2:d114:7bf3:7ba3:744a
+[ 1524.772467] lab-checks[30309]: sts.us-east-1.amazonaws.com              A    203.0.113.81
+[ 1524.772631] lab-checks[30309]: sts.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+[ 1524.808917] lab-checks[30309]: sts.us-east-1.api.aws                    A    203.0.113.128
+[ 1524.809082] lab-checks[30309]: sts.us-east-1.api.aws                    AAAA 2001:db8:7:c1:dc96:6493:8a53:26c4
+[ 1524.843936] lab-checks[30309]: s3.us-east-1.amazonaws.com               A    192.0.2.181 192.0.2.182 192.0.2.183 192.0.2.184 192.0.2.185 192.0.2.186 192.0.2.187 192.0.2.188
+[ 1524.844095] lab-checks[30309]: s3.us-east-1.amazonaws.com               AAAA - (Name or service not known)
+[ 1524.881541] lab-checks[30309]: s3.dualstack.us-east-1.amazonaws.com     A    192.0.2.189 192.0.2.190 192.0.2.191 192.0.2.192 192.0.2.193 192.0.2.194 192.0.2.195 192.0.2.196
+[ 1524.881698] lab-checks[30309]: s3.dualstack.us-east-1.amazonaws.com     AAAA 2001:db8:8:1::100f:e60f 2001:db8:9:1::100f:fd8f 2001:db8:a:1::100f:ed82 2001:db8:a::100f:c7c9 2001:db8:b:1::100f:f41d 2001:db8:b:1::100f:f5aa 2001:db8:c:1::100f:d5f0 2001:db8:c:1::100f:d6d6
+[ 1524.922028] lab-checks[30309]: ssm.us-east-1.amazonaws.com              A    192.0.2.197
+[ 1524.923445] lab-checks[30309]: ssm.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+[ 1524.962142] lab-checks[30309]: ssm.us-east-1.api.aws                    A    203.0.113.98
+[ 1524.963630] lab-checks[30309]: ssm.us-east-1.api.aws                    AAAA 2001:db8:7:60:67d3:30a0:f27f:d243
+[ 1524.995357] lab-checks[30309]: checkip.amazonaws.com                    A    203.0.113.38 203.0.113.99 203.0.113.138 203.0.113.40 203.0.113.42 203.0.113.43 203.0.113.137 203.0.113.45
+[ 1524.998189] lab-checks[30309]: checkip.amazonaws.com                    AAAA - (Name or service not known)
+[ 1525.031917] lab-checks[30309]: api6.ipify.org                           A    - (Name or service not known)
+[ 1525.032063] lab-checks[30309]: api6.ipify.org                           AAAA 2001:db8:f:3c::4
+[ 1525.037053] lab-checks[30309]: == HTTPS
+[ 1525.069681] lab-checks[30309]: github.com                               200 via 203.0.113.221  dns=0.001221s connect=0.002791s total=0.026169s
+[ 1525.097591] lab-checks[30309]: api.github.com                           200 via 203.0.113.246  dns=0.002075s connect=0.003992s total=0.019756s
+[ 1525.129342] lab-checks[30309]: pypi.org                                 200 via 2001:db8:3::223  dns=0.000750s connect=0.001890s total=0.023477s
+[ 1525.152823] lab-checks[30309]: registry-1.docker.io                     404 via 2001:db8:6:0:4c42:fa9c:215d:b2d2  dns=0.000769s connect=0.001188s total=0.014818s
+[ 1525.182667] lab-checks[30309]: sts.us-east-1.amazonaws.com              302 via 203.0.113.81  dns=0.002847s connect=0.005055s total=0.021350s
+[ 1525.207585] lab-checks[30309]: sts.us-east-1.api.aws                    302 via 2001:db8:7:c1:dc96:6493:8a53:26c4  dns=0.000591s connect=0.002027s total=0.016956s
+[ 1525.235227] lab-checks[30309]: s3.us-east-1.amazonaws.com               307 via 192.0.2.183  dns=0.002456s connect=0.004271s total=0.019140s
+[ 1525.258872] lab-checks[30309]: s3.dualstack.us-east-1.amazonaws.com     307 via 2001:db8:b:1::100f:f5f3  dns=0.001161s connect=0.002094s total=0.015528s
+[ 1525.285716] lab-checks[30309]: ssm.us-east-1.amazonaws.com              400 via 192.0.2.197  dns=0.003065s connect=0.005164s total=0.018624s
+[ 1525.308691] lab-checks[30309]: ssm.us-east-1.api.aws                    400 via 2001:db8:7:60:67d3:30a0:f27f:d243  dns=0.000598s connect=0.001713s total=0.014688s
+[ 1525.331872] lab-checks[30309]: checkip.amazonaws.com                    200 via 203.0.113.99  dns=0.001015s connect=0.002308s total=0.014780s
+[ 1525.520675] lab-checks[30309]: api6.ipify.org                           200 via 2001:db8:f:3c::4  dns=0.000936s connect=0.058676s total=0.180382s
+[ 1525.523151] lab-checks[30309]: == Address the internet sees
+[ 1525.524165] lab-checks[30309]: $ curl -sS --max-time 10 https://api6.ipify.org
+[ 1525.712448] lab-checks[30309]: 2001:db8:1:20:f0bb:42f0:3b41:5e76[exit 0, 186 ms]
+[ 1525.713986] lab-checks[30309]: $ curl -sS --max-time 10 https://checkip.amazonaws.com
+[ 1525.735427] lab-checks[30309]: 198.51.100.95
+[ 1525.738976] lab-checks[30309]: [exit 0, 24 ms]
+[ 1525.739930] lab-checks[30309]: == GitHub
+[ 1525.781039] lab-checks[30309]: github.com #1  200 via 203.0.113.221  connect=0.007111s total=0.035894s
+[ 1527.815716] lab-checks[30309]: github.com #2  200 via 203.0.113.221  connect=0.002870s total=0.025307s
+[ 1529.854041] lab-checks[30309]: github.com #3  200 via 203.0.113.221  connect=0.003025s total=0.028957s
+[ 1531.887750] lab-checks[30309]: github.com #4  200 via 203.0.113.221  connect=0.002740s total=0.024510s
+[ 1533.924013] lab-checks[30309]: github.com #5  200 via 203.0.113.221  connect=0.003472s total=0.026659s
+[ 1535.957478] lab-checks[30309]: github.com #6  200 via 203.0.113.221  connect=0.003519s total=0.025094s
+[ 1537.961091] lab-checks[30309]: $ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+[ 1538.051415] lab-checks[30309]: 1cf6ad2721b8393e545fffaf1c714cfb45da8b86	refs/heads/dev
+[ 1538.051596] lab-checks[30309]: b686ee50a47320dd31e2483fffb94d65600fca4c	refs/heads/main
+[ 1538.055583] lab-checks[30309]: [exit 0, 93 ms]
+[ 1538.056523] lab-checks[30309]: == AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+[ 1538.057969] lab-checks[30309]: $ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1538.510794] lab-checks[30309]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1538.583334] lab-checks[30309]: [exit 0, 526 ms]
+[ 1538.583492] lab-checks[30309]: == AWS CLI, default endpoints (metadata over IPv6)
+[ 1538.583789] lab-checks[30309]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1539.043937] lab-checks[30309]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1539.115931] lab-checks[30309]: [exit 0, 526 ms]
+[ 1539.116153] lab-checks[30309]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[ 1539.615622] lab-checks[30309]: None
+[ 1539.615804] lab-checks[30309]: None
+[ 1539.696546] lab-checks[30309]: [exit 0, 578 ms]
+[ 1539.696772] lab-checks[30309]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1540.186370] lab-checks[30309]: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1540.268368] lab-checks[30309]: [exit 0, 569 ms]
+[ 1540.269297] lab-checks[30309]: == AWS CLI, dual-stack endpoints (metadata over IPv6)
+[ 1540.270788] lab-checks[30309]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1540.716316] lab-checks[30309]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1540.787012] lab-checks[30309]: [exit 0, 516 ms]
+[ 1540.788008] lab-checks[30309]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[ 1541.300226] lab-checks[30309]: None
+[ 1541.300421] lab-checks[30309]: None
+[ 1541.383790] lab-checks[30309]: [exit 0, 595 ms]
+[ 1541.384013] lab-checks[30309]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1541.874023] lab-checks[30309]: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1541.951505] lab-checks[30309]: [exit 0, 565 ms]
+[ 1541.952533] lab-checks[30309]: == Packages and time
+[ 1541.953501] lab-checks[30309]: $ timeout 120 dnf -q makecache --refresh
+[ 1542.771735] lab-checks[30309]: [exit 0, 818 ms]
+[ 1542.772052] lab-checks[30309]: $ chronyc -n sources
+[ 1542.776682] lab-checks[30309]: MS Name/IP address         Stratum Poll Reach LastRx Last sample
+[ 1542.778277] lab-checks[30309]: ===============================================================================
+[ 1542.779950] lab-checks[30309]: ^* fd00:ec2::123                 3   4   377    10  +6852ns[+7231ns] +/-  468us
+[ 1542.781622] lab-checks[30309]: ^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   7   377    13    +15us[  +16us] +/-  764us
+[ 1542.783371] lab-checks[30309]: ^- 2001:db8:16:1:f191:59e4:8a22:4973   4   6   377     9    -10us[  -10us] +/-  585us
+[ 1542.785147] lab-checks[30309]: ^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   7   377    10    -73us[  -73us] +/-  661us
+[ 1542.787491] lab-checks[30309]: ^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   7   377    11    -10us[-9729ns] +/-  769us
+[ 1542.789286] lab-checks[30309]: [exit 0, 4 ms]
+[ 1542.790185] lab-checks[30309]: finished=20261108T131143Z
+[ 1884.505403] lab-checks[30696]: step=4-endpoints instance=aws-ipv6-lab-control started=20261108T131725Z
+[ 1884.505595] lab-checks[30696]: == Instance
+[ 1884.505774] lab-checks[30696]: $ cat /etc/amazon-linux-release
+[ 1884.511130] lab-checks[30696]: Amazon Linux release 2023.12.20261102 (Amazon Linux)
+[ 1884.514151] lab-checks[30696]: [exit 0, 8 ms]
+[ 1884.514274] lab-checks[30696]: $ hostname -f
+[ 1884.519376] lab-checks[30696]: i-EXAMPLE2.ec2.internal
+[ 1884.522108] lab-checks[30696]: [exit 0, 6 ms]
+[ 1884.524333] lab-checks[30696]: $ ip -brief address
+[ 1884.527504] lab-checks[30696]: lo               UNKNOWN        127.0.0.1/8 ::1/128
+[ 1884.529323] lab-checks[30696]: ens5             UP             10.30.0.45/28 metric 512 2001:db8:1:20:f0bb:42f0:3b41:5e76/128 fe80::10ff:c8ff:fee2:6e9d/64
+[ 1884.534523] lab-checks[30696]: docker0          DOWN           172.17.0.1/16
+[ 1884.534638] lab-checks[30696]: [exit 0, 8 ms]
+[ 1884.534846] lab-checks[30696]: $ ip -6 route
+[ 1884.538762] lab-checks[30696]: 2001:db8:1:20::/64 dev ens5 proto ra metric 512 pref medium
+[ 1884.538889] lab-checks[30696]: fe80::/64 dev ens5 proto kernel metric 256 pref medium
+[ 1884.539128] lab-checks[30696]: default via fe80::10ff:f2ff:fea7:c639 dev ens5 proto ra metric 512 expires 1792sec pref medium
+[ 1884.545036] lab-checks[30696]: [exit 0, 10 ms]
+[ 1884.545186] lab-checks[30696]: $ ip -4 route
+[ 1884.550112] lab-checks[30696]: default via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[ 1884.550261] lab-checks[30696]: 10.30.0.2 via 10.30.0.33 dev ens5 proto dhcp src 10.30.0.45 metric 512
+[ 1884.550484] lab-checks[30696]: 10.30.0.32/28 dev ens5 proto kernel scope link src 10.30.0.45 metric 512
+[ 1884.550697] lab-checks[30696]: 10.30.0.33 dev ens5 proto dhcp scope link src 10.30.0.45 metric 512
+[ 1884.550907] lab-checks[30696]: 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+[ 1884.558522] lab-checks[30696]: [exit 0, 10 ms]
+[ 1884.558657] lab-checks[30696]: $ cat /etc/resolv.conf
+[ 1884.564039] lab-checks[30696]: # This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+[ 1884.564181] lab-checks[30696]: # Do not edit.
+[ 1884.564223] lab-checks[30696]: #
+[ 1884.564256] lab-checks[30696]: # This file might be symlinked as /etc/resolv.conf. If you're looking at
+[ 1884.564471] lab-checks[30696]: # /etc/resolv.conf and seeing this text, you have followed the symlink.
+[ 1884.564675] lab-checks[30696]: #
+[ 1884.564878] lab-checks[30696]: # This is a dynamic resolv.conf file for connecting local clients directly to
+[ 1884.565085] lab-checks[30696]: # all known uplink DNS servers. This file lists all configured search domains.
+[ 1884.565290] lab-checks[30696]: #
+[ 1884.565498] lab-checks[30696]: # Third party programs should typically not access this file directly, but only
+[ 1884.565704] lab-checks[30696]: # through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+[ 1884.565914] lab-checks[30696]: # different way, replace this symlink by a static file or a different symlink.
+[ 1884.566117] lab-checks[30696]: #
+[ 1884.566322] lab-checks[30696]: # See man:systemd-resolved.service(8) for details about the supported modes of
+[ 1884.566529] lab-checks[30696]: # operation for /etc/resolv.conf.
+[ 1884.566736] lab-checks[30696]: nameserver 10.30.0.2
+[ 1884.566937] lab-checks[30696]: search ec2.internal
+[ 1884.582501] lab-checks[30696]: [exit 0, 2 ms]
+[ 1884.582653] lab-checks[30696]: $ resolvectl dns
+[ 1884.595323] lab-checks[30696]: Global:
+[ 1884.595468] lab-checks[30696]: Link 2 (ens5): 10.30.0.2
+[ 1884.595703] lab-checks[30696]: Link 3 (docker0):
+[ 1884.599622] lab-checks[30696]: [exit 0, 13 ms]
+[ 1884.599763] lab-checks[30696]: == Instance metadata
+[ 1884.599994] lab-checks[30696]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://[fd00:ec2::254]/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[ 1884.610642] lab-checks[30696]: 200
+[ 1884.612804] lab-checks[30696]: [exit 0, 7 ms]
+[ 1884.613691] lab-checks[30696]: $ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://169.254.169.254/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+[ 1884.619849] lab-checks[30696]: 200
+[ 1884.621861] lab-checks[30696]: [exit 0, 7 ms]
+[ 1884.622663] lab-checks[30696]: == DNS
+[ 1884.651103] lab-checks[30696]: github.com                               A    203.0.113.148
+[ 1884.651263] lab-checks[30696]: github.com                               AAAA - (Name or service not known)
+[ 1884.686910] lab-checks[30696]: api.github.com                           A    198.51.100.218
+[ 1884.687072] lab-checks[30696]: api.github.com                           AAAA - (Name or service not known)
+[ 1884.721412] lab-checks[30696]: pypi.org                                 A    203.0.113.7 203.0.113.8 203.0.113.9 203.0.113.10
+[ 1884.721661] lab-checks[30696]: pypi.org                                 AAAA 2001:db8:2::223 2001:db8:3::223 2001:db8:4::223 2001:db8:5::223
+[ 1884.756867] lab-checks[30696]: registry-1.docker.io                     A    198.51.100.220 203.0.113.76 198.51.100.75 203.0.113.78 198.51.100.237 198.51.100.238 203.0.113.79 198.51.100.178
+[ 1884.757036] lab-checks[30696]: registry-1.docker.io                     AAAA 2001:db8:6:0:4351:36ca:1fb4:57ca 2001:db8:6:0:dc7b:8539:a754:109f 2001:db8:6:1:28c9:f649:1555:473 2001:db8:6:1:7b01:8da0:1005:bf64 2001:db8:6:2:8a0:f78d:280d:141e 2001:db8:6:2:9db2:a144:ea73:759e 2001:db8:6:2:ce3:d0c6:4f7:61e1 2001:db8:6:2:d452:6b33:acc:dc99
+[ 1884.799379] lab-checks[30696]: sts.us-east-1.amazonaws.com              A    - (Name or service not known)
+[ 1884.801047] lab-checks[30696]: sts.us-east-1.amazonaws.com              AAAA 2001:db8:1:10:82b6:a557:cacf:84f2
+[ 1884.834167] lab-checks[30696]: sts.us-east-1.api.aws                    A    - (Name or service not known)
+[ 1884.835812] lab-checks[30696]: sts.us-east-1.api.aws                    AAAA 2001:db8:1:10:82b6:a557:cacf:84f2
+[ 1884.868812] lab-checks[30696]: s3.us-east-1.amazonaws.com               A    192.0.2.10 192.0.2.198 192.0.2.199 192.0.2.200 192.0.2.201 192.0.2.202 192.0.2.203 192.0.2.204
+[ 1884.868961] lab-checks[30696]: s3.us-east-1.amazonaws.com               AAAA - (Name or service not known)
+[ 1884.904881] lab-checks[30696]: s3.dualstack.us-east-1.amazonaws.com     A    192.0.2.205 192.0.2.3 192.0.2.206 192.0.2.207 192.0.2.208 192.0.2.209 192.0.2.210 192.0.2.211
+[ 1884.907682] lab-checks[30696]: s3.dualstack.us-east-1.amazonaws.com     AAAA 2001:db8:8:1::100f:e44a 2001:db8:8:1::100f:e526 2001:db8:9:1::100f:fca7 2001:db8:9:1::100f:ff11 2001:db8:9:1::100f:ffc4 2001:db8:b:1::100f:f600 2001:db8:1b::100f:a130
+[ 1884.940929] lab-checks[30696]: ssm.us-east-1.amazonaws.com              A    - (Name or service not known)
+[ 1884.941096] lab-checks[30696]: ssm.us-east-1.amazonaws.com              AAAA 2001:db8:1:10:21e2:cd8b:4b64:1c14
+[ 1884.979339] lab-checks[30696]: ssm.us-east-1.api.aws                    A    - (Name or service not known)
+[ 1884.979511] lab-checks[30696]: ssm.us-east-1.api.aws                    AAAA 2001:db8:1:10:21e2:cd8b:4b64:1c14
+[ 1885.015913] lab-checks[30696]: checkip.amazonaws.com                    A    203.0.113.99 203.0.113.138 203.0.113.39 203.0.113.40 203.0.113.41 203.0.113.42 203.0.113.137 203.0.113.45
+[ 1885.016079] lab-checks[30696]: checkip.amazonaws.com                    AAAA - (Name or service not known)
+[ 1885.057959] lab-checks[30696]: api6.ipify.org                           A    - (Name or service not known)
+[ 1885.058113] lab-checks[30696]: api6.ipify.org                           AAAA 2001:db8:f:3c::4
+[ 1885.065353] lab-checks[30696]: == HTTPS
+[ 1885.097979] lab-checks[30696]: github.com                               200 via 203.0.113.148  dns=0.001125s connect=0.003008s total=0.026506s
+[ 1885.123775] lab-checks[30696]: api.github.com                           200 via 198.51.100.218  dns=0.001137s connect=0.002761s total=0.017448s
+[ 1885.147439] lab-checks[30696]: pypi.org                                 200 via 2001:db8:3::223  dns=0.000722s connect=0.001185s total=0.015288s
+[ 1885.172081] lab-checks[30696]: registry-1.docker.io                     404 via 2001:db8:6:2:8a0:f78d:280d:141e  dns=0.000995s connect=0.001949s total=0.016568s
+[ 1890.183708] lab-checks[30696]: sts.us-east-1.amazonaws.com              curl: (28) Connection timed out after 5003 milliseconds
+[ 1890.185965] lab-checks[30696]: 000 via   dns=0.001112s connect=0.000000s total=5.003494s
+[ 1891.276767] lab-checks[30696]: sts.us-east-1.api.aws                    302 via 2001:db8:1:10:82b6:a557:cacf:84f2  dns=0.001274s connect=1.072114s total=1.085785s
+[ 1891.300966] lab-checks[30696]: s3.us-east-1.amazonaws.com               307 via 192.0.2.212  dns=0.001160s connect=0.002428s total=0.017536s
+[ 1891.326315] lab-checks[30696]: s3.dualstack.us-east-1.amazonaws.com     307 via 2001:db8:b:1::100f:f650  dns=0.002018s connect=0.002918s total=0.017223s
+[ 1891.350321] lab-checks[30696]: ssm.us-east-1.amazonaws.com              400 via 2001:db8:1:10:21e2:cd8b:4b64:1c14  dns=0.001099s connect=0.002488s total=0.015720s
+[ 1891.376058] lab-checks[30696]: ssm.us-east-1.api.aws                    400 via 2001:db8:1:10:21e2:cd8b:4b64:1c14  dns=0.001094s connect=0.003502s total=0.017295s
+[ 1891.399469] lab-checks[30696]: checkip.amazonaws.com                    200 via 203.0.113.41  dns=0.000885s connect=0.001966s total=0.014680s
+[ 1891.594943] lab-checks[30696]: api6.ipify.org                           200 via 2001:db8:f:3c::4  dns=0.004257s connect=0.061462s total=0.187020s
+[ 1891.597594] lab-checks[30696]: == Address the internet sees
+[ 1891.597779] lab-checks[30696]: $ curl -sS --max-time 10 https://api6.ipify.org
+[ 1891.790079] lab-checks[30696]: 2001:db8:1:20:f0bb:42f0:3b41:5e76[exit 0, 189 ms]
+[ 1891.791531] lab-checks[30696]: $ curl -sS --max-time 10 https://checkip.amazonaws.com
+[ 1891.810939] lab-checks[30696]: 198.51.100.95
+[ 1891.814614] lab-checks[30696]: [exit 0, 22 ms]
+[ 1891.815534] lab-checks[30696]: == GitHub
+[ 1891.850258] lab-checks[30696]: github.com #1  200 via 203.0.113.148  connect=0.003062s total=0.029528s
+[ 1893.889134] lab-checks[30696]: github.com #2  200 via 203.0.113.148  connect=0.003215s total=0.028729s
+[ 1895.936879] lab-checks[30696]: github.com #3  200 via 203.0.113.148  connect=0.005900s total=0.038304s
+[ 1897.974439] lab-checks[30696]: github.com #4  200 via 203.0.113.148  connect=0.003356s total=0.028276s
+[ 1900.016142] lab-checks[30696]: github.com #5  200 via 203.0.113.148  connect=0.003556s total=0.032276s
+[ 1902.059820] lab-checks[30696]: github.com #6  200 via 203.0.113.148  connect=0.004885s total=0.034179s
+[ 1904.063605] lab-checks[30696]: $ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+[ 1904.175024] lab-checks[30696]: 1cf6ad2721b8393e545fffaf1c714cfb45da8b86	refs/heads/dev
+[ 1904.176589] lab-checks[30696]: b686ee50a47320dd31e2483fffb94d65600fca4c	refs/heads/main
+[ 1904.178207] lab-checks[30696]: [exit 0, 112 ms]
+[ 1904.179109] lab-checks[30696]: == AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+[ 1904.180681] lab-checks[30696]: $ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1904.631612] lab-checks[30696]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1904.710483] lab-checks[30696]: [exit 0, 531 ms]
+[ 1904.710648] lab-checks[30696]: == AWS CLI, default endpoints (metadata over IPv6)
+[ 1904.710915] lab-checks[30696]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1905.167701] lab-checks[30696]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1905.243869] lab-checks[30696]: [exit 0, 528 ms]
+[ 1905.244877] lab-checks[30696]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[ 1905.759645] lab-checks[30696]: None
+[ 1905.760479] lab-checks[30696]: None
+[ 1905.839340] lab-checks[30696]: [exit 0, 593 ms]
+[ 1905.840369] lab-checks[30696]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1911.292608] lab-checks[30696]: aws: [ERROR]: Connect timeout on endpoint URL: "https://ssm.us-east-1.amazonaws.com/"
+[ 1911.369198] lab-checks[30696]: [exit 255, 5528 ms]
+[ 1911.370234] lab-checks[30696]: == AWS CLI, dual-stack endpoints (metadata over IPv6)
+[ 1911.371541] lab-checks[30696]: $ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+[ 1911.817161] lab-checks[30696]: arn:aws:sts::111122223333:assumed-role/EXAMPLE2
+[ 1911.892471] lab-checks[30696]: [exit 0, 521 ms]
+[ 1911.893527] lab-checks[30696]: $ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+[ 1912.400361] lab-checks[30696]: None
+[ 1912.401098] lab-checks[30696]: None
+[ 1912.485821] lab-checks[30696]: [exit 0, 591 ms]
+[ 1912.486801] lab-checks[30696]: $ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[ 1917.942234] lab-checks[30696]: aws: [ERROR]: Connect timeout on endpoint URL: "https://ssm.us-east-1.api.aws/"
+[ 1918.023404] lab-checks[30696]: [exit 255, 5535 ms]
+[ 1918.024418] lab-checks[30696]: == Packages and time
+[ 1918.025287] lab-checks[30696]: $ timeout 120 dnf -q makecache --refresh
+[ 1918.870479] lab-checks[30696]: [exit 0, 845 ms]
+[ 1918.870870] lab-checks[30696]: $ chronyc -n sources
+[ 1918.874124] lab-checks[30696]: MS Name/IP address         Stratum Poll Reach LastRx Last sample
+[ 1918.875719] lab-checks[30696]: ===============================================================================
+[ 1918.877688] lab-checks[30696]: ^* fd00:ec2::123                 3   4   377    14    +82us[  +85us] +/-  514us
+[ 1918.879525] lab-checks[30696]: ^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   7   377     0    -36us[  -36us] +/-  790us
+[ 1918.881586] lab-checks[30696]: ^- 2001:db8:16:1:f191:59e4:8a22:4973   4   7   377    63    -20us[  -15us] +/-  588us
+[ 1918.883679] lab-checks[30696]: ^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   8   377   257    -62us[  -47us] +/-  658us
+[ 1918.885720] lab-checks[30696]: ^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   8   377     1    -60us[  -60us] +/-  813us
+[ 1918.887787] lab-checks[30696]: [exit 0, 4 ms]
+[ 1918.888664] lab-checks[30696]: finished=20261108T131759Z
+

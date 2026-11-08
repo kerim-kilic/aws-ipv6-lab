@@ -1,0 +1,81 @@
+name: Checks
+
+# Lint and validate the Terraform, the scripts and this workflow, and test the scrubber. No cloud credentials: nothing is planned or applied.
+# No path filters, so every check reports on every pull request and can be required on main.
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "^1.11.0"
+          terraform_wrapper: false
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive -diff terraform
+
+      - name: Initialise (no backend)
+        run: terraform -chdir=terraform init -backend=false -input=false
+
+      - name: Validate
+        run: terraform -chdir=terraform validate
+
+  tflint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: terraform-linters/setup-tflint@v6
+
+      - name: Install plugins
+        run: tflint --init --chdir=terraform
+        env:
+          # Avoids GitHub API rate limits when downloading the AWS ruleset.
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Lint
+        run: tflint --chdir=terraform --format=compact
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # ShellCheck is preinstalled on the runner.
+      - name: Lint scripts
+        run: shellcheck scripts/*.sh instance/*.sh
+
+  scrubber:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # Python 3 is preinstalled on the runner, and the scrubber only uses the standard library.
+      - name: Test the scrubber
+        run: python3 -m unittest discover -s scripts -v
+
+  actionlint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Lint workflows
+        run: docker run --rm -v "$PWD:/repo" --workdir /repo rhysd/actionlint:1.7.12 -color

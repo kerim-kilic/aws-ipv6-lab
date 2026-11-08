@@ -1,0 +1,17 @@
+# Monthly pull requests for new releases: the GitHub Actions grouped into one, and the AWS provider.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "dev"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: "terraform"
+    directory: "/terraform"
+    target-branch: "dev"
+    schedule:
+      interval: "monthly"

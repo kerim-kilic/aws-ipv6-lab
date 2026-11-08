@@ -1,0 +1,229 @@
+step=1-eigw-only instance=aws-ipv6-lab-client started=20261108T123157Z
+
+== Instance
+$ cat /etc/amazon-linux-release
+Amazon Linux release 2023.12.20261102 (Amazon Linux)
+[exit 0, 3 ms]
+$ hostname -f
+i-EXAMPLE1.ec2.internal
+[exit 0, 17 ms]
+$ ip -brief address
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+ens5             UP             169.254.77.90/32 metric 512 2001:db8:1:10:dce5:b951:23a3:1b5d/128 fe80::10ff:e6ff:fee1:1455/64 
+docker0          DOWN           172.17.0.1/16 
+[exit 0, 5 ms]
+$ ip -6 route
+2001:db8:1:10::/64 dev ens5 proto ra metric 512 pref medium
+fe80::/64 dev ens5 proto kernel metric 256 pref medium
+default via fe80::10ff:d1ff:fe6c:6d23 dev ens5 proto ra metric 512 expires 1790sec pref medium
+[exit 0, 5 ms]
+$ ip -4 route
+169.254.0.1 dev ens5 proto dhcp scope link src 169.254.77.90 metric 512 
+169.254.169.123 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.249 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.250/31 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.253 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.253 dev ens5 proto dhcp scope link src 169.254.77.90 metric 512 
+169.254.169.254 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+[exit 0, 4 ms]
+$ cat /etc/resolv.conf
+# This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+# Do not edit.
+#
+# This file might be symlinked as /etc/resolv.conf. If you're looking at
+# /etc/resolv.conf and seeing this text, you have followed the symlink.
+#
+# This is a dynamic resolv.conf file for connecting local clients directly to
+# all known uplink DNS servers. This file lists all configured search domains.
+#
+# Third party programs should typically not access this file directly, but only
+# through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+# different way, replace this symlink by a static file or a different symlink.
+#
+# See man:systemd-resolved.service(8) for details about the supported modes of
+# operation for /etc/resolv.conf.
+
+nameserver 169.254.169.253
+nameserver fd00:ec2::253
+search ec2.internal
+[exit 0, 6 ms]
+$ resolvectl dns
+Global:
+Link 2 (ens5): 169.254.169.253 fd00:ec2::253
+Link 3 (docker0):
+[exit 0, 12 ms]
+
+== Instance metadata
+$ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://[fd00:ec2::254]/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+200
+[exit 0, 8 ms]
+$ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://169.254.169.254/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+200
+[exit 0, 9 ms]
+
+== DNS
+github.com                               A    203.0.113.72
+github.com                               AAAA - (Name or service not known)
+api.github.com                           A    203.0.113.73
+api.github.com                           AAAA - (Name or service not known)
+pypi.org                                 A    203.0.113.7 203.0.113.8 203.0.113.9 203.0.113.10
+pypi.org                                 AAAA 2001:db8:2::223 2001:db8:3::223 2001:db8:4::223 2001:db8:5::223
+registry-1.docker.io                     A    203.0.113.74 203.0.113.75 203.0.113.76 203.0.113.77 203.0.113.78 203.0.113.79 203.0.113.16 203.0.113.80
+registry-1.docker.io                     AAAA 2001:db8:6:0:2ecc:3777:44eb:c4ad 2001:db8:6:0:d6f0:bd3d:ed9a:31ee 2001:db8:6:1:7b01:8da0:1005:bf64 2001:db8:6:1:87:d71e:aa8e:5db3 2001:db8:6:2:1a00:7f55:4bc9:7452 2001:db8:6:2:6256:a93d:101e:9a93 2001:db8:6:2:6afe:1af0:3840:e079 2001:db8:6:2:9ba3:6727:3bde:e3e0
+sts.us-east-1.amazonaws.com              A    203.0.113.19
+sts.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+sts.us-east-1.api.aws                    A    203.0.113.81
+sts.us-east-1.api.aws                    AAAA 2001:db8:7:21:eddc:5eb8:dcc8:8dfd
+s3.us-east-1.amazonaws.com               A    203.0.113.82 203.0.113.83 203.0.113.84 203.0.113.85 203.0.113.86 203.0.113.87 203.0.113.88 203.0.113.89
+s3.us-east-1.amazonaws.com               AAAA - (Name or service not known)
+s3.dualstack.us-east-1.amazonaws.com     A    203.0.113.90 203.0.113.91 203.0.113.92 203.0.113.93 203.0.113.94 203.0.113.95 203.0.113.96 203.0.113.97
+s3.dualstack.us-east-1.amazonaws.com     AAAA 2001:db8:8:1::100f:e481 2001:db8:9:1::100f:ff16 2001:db8:9::100f:b797 2001:db8:a::100f:c76b 2001:db8:b:1::100f:f4da 2001:db8:b:1::100f:f5c6 2001:db8:b:1::100f:f67d 2001:db8:12::100f:abf3
+ssm.us-east-1.amazonaws.com              A    203.0.113.4
+ssm.us-east-1.amazonaws.com              AAAA - (Name or service not known)
+ssm.us-east-1.api.aws                    A    203.0.113.98
+ssm.us-east-1.api.aws                    AAAA 2001:db8:7:c1:7587:7bb4:f385:b844
+checkip.amazonaws.com                    A    203.0.113.38 203.0.113.99 203.0.113.100 203.0.113.39 203.0.113.40 203.0.113.41 203.0.113.43 203.0.113.44
+checkip.amazonaws.com                    AAAA - (Name or service not known)
+api6.ipify.org                           A    - (Name or service not known)
+api6.ipify.org                           AAAA 2001:db8:f:3c::4
+
+== HTTPS
+github.com                               curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   dns=0.001166s connect=0.000000s total=0.001243s
+api.github.com                           curl: (7) Failed to connect to api.github.com:443 after 4 ms: Could not connect to server
+000 via   dns=0.004244s connect=0.000000s total=0.004309s
+pypi.org                                 200 via 2001:db8:2::223  dns=0.001087s connect=0.002054s total=0.016963s
+registry-1.docker.io                     404 via 2001:db8:6:1:7b01:8da0:1005:bf64  dns=0.001403s connect=0.001756s total=0.017683s
+sts.us-east-1.amazonaws.com              curl: (7) Failed to connect to sts.us-east-1.amazonaws.com:443 after 1 ms: Could not connect to server
+000 via   dns=0.001070s connect=0.000000s total=0.001135s
+sts.us-east-1.api.aws                    302 via 2001:db8:7:21:eddc:5eb8:dcc8:8dfd  dns=0.001510s connect=0.002340s total=0.019268s
+s3.us-east-1.amazonaws.com               curl: (7) Failed to connect to s3.us-east-1.amazonaws.com:443 after 1 ms: Could not connect to server
+000 via   dns=0.001740s connect=0.000000s total=0.001892s
+s3.dualstack.us-east-1.amazonaws.com     307 via 2001:db8:9:1::100f:ff16  dns=0.000926s connect=0.001934s total=0.015015s
+ssm.us-east-1.amazonaws.com              curl: (7) Failed to connect to ssm.us-east-1.amazonaws.com:443 after 3 ms: Could not connect to server
+000 via   dns=0.003445s connect=0.000000s total=0.003518s
+ssm.us-east-1.api.aws                    400 via 2001:db8:7:c1:7587:7bb4:f385:b844  dns=0.001162s connect=0.002331s total=0.016524s
+checkip.amazonaws.com                    curl: (7) Failed to connect to checkip.amazonaws.com:443 after 1 ms: Could not connect to server
+000 via   dns=0.000994s connect=0.000000s total=0.001136s
+api6.ipify.org                           200 via 2001:db8:f:3c::4  dns=0.001036s connect=0.066005s total=0.187667s
+
+== Address the internet sees
+$ curl -sS --max-time 10 https://api6.ipify.org
+2001:db8:1:10:dce5:b951:23a3:1b5d[exit 0, 187 ms]
+$ curl -sS --max-time 10 https://checkip.amazonaws.com
+curl: (7) Failed to connect to checkip.amazonaws.com:443 after 1 ms: Could not connect to server
+[exit 7, 9 ms]
+
+== GitHub
+github.com #1  curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   connect=0.000000s total=0.001120s
+github.com #2  curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   connect=0.000000s total=0.001938s
+github.com #3  curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   connect=0.000000s total=0.001323s
+github.com #4  curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   connect=0.000000s total=0.001170s
+github.com #5  curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   connect=0.000000s total=0.001413s
+github.com #6  curl: (7) Failed to connect to github.com:443 after 1 ms: Could not connect to server
+000 via   connect=0.000000s total=0.001699s
+$ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+fatal: unable to access 'https://github.com/kerim-kilic/eks-ipv4-lab/': Failed to connect to github.com:443 after 1 ms: Could not connect to server
+[exit 128, 34 ms]
+
+== AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+$ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+arn:aws:sts::111122223333:assumed-role/EXAMPLE1
+[exit 0, 544 ms]
+
+== AWS CLI, default endpoints (metadata over IPv6)
+$ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+
+aws: [ERROR]: Could not connect to the endpoint URL: "https://sts.us-east-1.amazonaws.com/"
+[exit 255, 503 ms]
+$ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+
+aws: [ERROR]: Could not connect to the endpoint URL: "https://aws-ipv6-lab-results-EXAMPLE1.s3.us-east-1.amazonaws.com/?list-type=2&encoding-type=url"
+[exit 255, 550 ms]
+$ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+aws: [ERROR]: Could not connect to the endpoint URL: "https://ssm.us-east-1.amazonaws.com/"
+[exit 255, 534 ms]
+
+== AWS CLI, dual-stack endpoints (metadata over IPv6)
+$ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+arn:aws:sts::111122223333:assumed-role/EXAMPLE1
+[exit 0, 522 ms]
+$ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+None
+None
+[exit 0, 581 ms]
+$ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[exit 0, 560 ms]
+
+== S3 by name: probe object and a 20 MB download
+aws-ipv6-lab-probe-EXAMPLE2.s3.us-east-1.amazonaws.com A    203.0.113.101 203.0.113.102 203.0.113.103 203.0.113.104 203.0.113.105 203.0.113.106 203.0.113.107 203.0.113.108
+aws-ipv6-lab-probe-EXAMPLE2.s3.us-east-1.amazonaws.com AAAA - (Name or service not known)
+aws-ipv6-lab-probe-EXAMPLE2.s3.dualstack.us-east-1.amazonaws.com A    203.0.113.109 203.0.113.110 203.0.113.111 203.0.113.112 203.0.113.113 203.0.113.114 203.0.113.115 203.0.113.116
+aws-ipv6-lab-probe-EXAMPLE2.s3.dualstack.us-east-1.amazonaws.com AAAA 2001:db8:a:1::100f:ee2f 2001:db8:a:1::100f:ee4e 2001:db8:a::100f:c7f3 2001:db8:b:1::100f:f40a 2001:db8:b:1::100f:f42f 2001:db8:b:1::100f:f62b 2001:db8:c:1::100f:d429 2001:db8:c:1::100f:d593
+-- default endpoint
+$ aws s3api get-object --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-probe-EXAMPLE2 --key probe.txt /dev/null --query ContentLength --output text
+
+aws: [ERROR]: Could not connect to the endpoint URL: "https://aws-ipv6-lab-probe-EXAMPLE2.s3.us-east-1.amazonaws.com/probe.txt"
+[exit 255, 553 ms]
+$ s3get s3://aws-ipv6-lab-results-EXAMPLE1/testdata/20mb.bin
+download failed: s3://aws-ipv6-lab-results-EXAMPLE1/testdata/20mb.bin to - Could not connect to the endpoint URL: "https://aws-ipv6-lab-results-EXAMPLE1.s3.us-east-1.amazonaws.com/testdata/20mb.bin"
+[exit 1, 580 ms]
+-- dual-stack endpoint
+$ aws s3api get-object --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-probe-EXAMPLE2 --key probe.txt /dev/null --query ContentLength --output text
+35
+[exit 0, 620 ms]
+$ s3get s3://aws-ipv6-lab-results-EXAMPLE1/testdata/20mb.bin
+[exit 0, 830 ms]
+
+== ECR: where the layers come from, and a 40 MB pull through each registry name
+-- 111122223333.dkr.ecr.us-east-1.amazonaws.com  at 12:33:27
+111122223333.dkr.ecr.us-east-1.amazonaws.com A    203.0.113.117
+111122223333.dkr.ecr.us-east-1.amazonaws.com AAAA - (Name or service not known)
+curl: (7) Failed to connect to 111122223333.dkr.ecr.us-east-1.amazonaws.com:443 after 6 ms: Could not connect to server
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib64/python3.9/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+  File "/usr/lib64/python3.9/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib64/python3.9/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib64/python3.9/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+layer redirect: failed
+$ docker_pull 111122223333.dkr.ecr.us-east-1.amazonaws.com
+Error response from daemon: Get "https://111122223333.dkr.ecr.us-east-1.amazonaws.com/v2/": dial tcp 203.0.113.117:443: connect: network is unreachable
+[exit 1, 73 ms]
+-- 111122223333.dkr-ecr.us-east-1.on.aws  at 12:34:38
+111122223333.dkr-ecr.us-east-1.on.aws    A    203.0.113.118
+111122223333.dkr-ecr.us-east-1.on.aws    AAAA 2001:db8:13:1:9b47:2af5:d6ac:86c9 2001:db8:13:2:fa52:de07:a17b:a1f0 2001:db8:13:3:b674:e569:440a:16c2 2001:db8:13:4:310e:2b1b:938f:3122 2001:db8:13:5:a95:4870:f95b:8156 2001:db8:13:6:f5bb:28b1:e0c6:2d02
+layer redirect to: prod-us-east-1-starport-layer-bucket.s3.dualstack.us-east-1.amazonaws.com
+prod-us-east-1-starport-layer-bucket.s3.dualstack.us-east-1.amazonaws.com A    203.0.113.119 203.0.113.120 203.0.113.121 203.0.113.122 203.0.113.123 203.0.113.124 203.0.113.125 203.0.113.126
+prod-us-east-1-starport-layer-bucket.s3.dualstack.us-east-1.amazonaws.com AAAA 2001:db8:8:1::100f:e58e 2001:db8:9:1::100f:fd1d 2001:db8:9:1::100f:fd3b 2001:db8:a:1::100f:ec12 2001:db8:a:1::100f:ef0e 2001:db8:b:1::100f:f685 2001:db8:c:1::100f:d444 2001:db8:17::100f:a76c
+$ docker_pull 111122223333.dkr-ecr.us-east-1.on.aws
+111122223333.dkr-ecr.us-east-1.on.aws/aws-ipv6-lab-test:latest
+[exit 0, 1215 ms]
+
+== Packages and time
+$ timeout 120 dnf -q makecache --refresh
+[exit 0, 995 ms]
+$ chronyc -n sources
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^* fd00:ec2::123                 3   4   377     8    -32us[  -34us] +/-  521us
+^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   6   377    22    -29us[  -31us] +/-  778us
+^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   6   377    26    -55us[  -56us] +/-  777us
+^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   6   377    25    -94us[  -96us] +/-  648us
+^- 2001:db8:16:0:46e8:2cd4:84f2:c189   4   6   377    25    -50us[  -52us] +/-  538us
+[exit 0, 3 ms]
+
+finished=20261108T123440Z

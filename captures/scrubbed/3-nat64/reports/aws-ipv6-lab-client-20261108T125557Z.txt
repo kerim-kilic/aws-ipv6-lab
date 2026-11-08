@@ -1,0 +1,204 @@
+step=3-nat64 instance=aws-ipv6-lab-client started=20261108T125557Z
+
+== Instance
+$ cat /etc/amazon-linux-release
+Amazon Linux release 2023.12.20261102 (Amazon Linux)
+[exit 0, 6 ms]
+$ hostname -f
+i-EXAMPLE1.ec2.internal
+[exit 0, 14 ms]
+$ ip -brief address
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+ens5             UP             169.254.77.90/32 metric 512 2001:db8:1:10:dce5:b951:23a3:1b5d/128 fe80::10ff:e6ff:fee1:1455/64 
+docker0          DOWN           172.17.0.1/16 
+[exit 0, 7 ms]
+$ ip -6 route
+2001:db8:1:10::/64 dev ens5 proto ra metric 512 pref medium
+fe80::/64 dev ens5 proto kernel metric 256 pref medium
+default via fe80::10ff:d1ff:fe6c:6d23 dev ens5 proto ra metric 512 expires 1795sec pref medium
+[exit 0, 5 ms]
+$ ip -4 route
+169.254.0.1 dev ens5 proto dhcp scope link src 169.254.77.90 metric 512 
+169.254.169.123 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.249 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.250/31 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.253 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+169.254.169.253 dev ens5 proto dhcp scope link src 169.254.77.90 metric 512 
+169.254.169.254 via 169.254.0.1 dev ens5 proto dhcp src 169.254.77.90 metric 512 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+[exit 0, 3 ms]
+$ cat /etc/resolv.conf
+# This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+# Do not edit.
+#
+# This file might be symlinked as /etc/resolv.conf. If you're looking at
+# /etc/resolv.conf and seeing this text, you have followed the symlink.
+#
+# This is a dynamic resolv.conf file for connecting local clients directly to
+# all known uplink DNS servers. This file lists all configured search domains.
+#
+# Third party programs should typically not access this file directly, but only
+# through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+# different way, replace this symlink by a static file or a different symlink.
+#
+# See man:systemd-resolved.service(8) for details about the supported modes of
+# operation for /etc/resolv.conf.
+
+nameserver 169.254.169.253
+nameserver fd00:ec2::253
+search ec2.internal
+[exit 0, 2 ms]
+$ resolvectl dns
+Global:
+Link 2 (ens5): 169.254.169.253 fd00:ec2::253
+Link 3 (docker0):
+[exit 0, 9 ms]
+
+== Instance metadata
+$ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://[fd00:ec2::254]/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+200
+[exit 0, 12 ms]
+$ curl -sS --max-time 2 -o /dev/null -w %{http_code}\n -X PUT http://169.254.169.254/latest/api/token -H X-aws-ec2-metadata-token-ttl-seconds: 60
+200
+[exit 0, 16 ms]
+
+== DNS
+github.com                               A    203.0.113.5
+github.com                               AAAA 64:ff9b::203.0.113.221
+api.github.com                           A    203.0.113.6
+api.github.com                           AAAA 64:ff9b::203.0.113.127
+pypi.org                                 A    203.0.113.7 203.0.113.8 203.0.113.9 203.0.113.10
+pypi.org                                 AAAA 2001:db8:2::223 2001:db8:3::223 2001:db8:4::223 2001:db8:5::223
+registry-1.docker.io                     A    198.51.100.74 198.51.100.75 198.51.100.76 198.51.100.77 203.0.113.13 203.0.113.15 203.0.113.79 203.0.113.153
+registry-1.docker.io                     AAAA 2001:db8:6:0:4c42:fa9c:215d:b2d2 2001:db8:6:0:a44:bc8:be4f:3ca 2001:db8:6:0:bf6f:b91f:d5d:ee60 2001:db8:6:1:8bdf:673c:76:b448 2001:db8:6:1:fdcd:f411:5f82:aee9 2001:db8:6:2:9de:a0f9:a29c:7abf 2001:db8:6:2:d114:7bf3:7ba3:744a 2001:db8:6:2:db8e:6f23:8bdd:25e9
+sts.us-east-1.amazonaws.com              A    203.0.113.247
+sts.us-east-1.amazonaws.com              AAAA 64:ff9b::203.0.113.19
+sts.us-east-1.api.aws                    A    198.51.100.78
+sts.us-east-1.api.aws                    AAAA 2001:db8:7:60:7a7e:82b:c042:dec6
+s3.us-east-1.amazonaws.com               A    198.51.100.79 198.51.100.20 203.0.113.26 198.51.100.80 198.51.100.81 198.51.100.82 198.51.100.83 198.51.100.84
+s3.us-east-1.amazonaws.com               AAAA 64:ff9b::203.0.113.222 64:ff9b::203.0.113.223 64:ff9b::203.0.113.224 64:ff9b::203.0.113.225 64:ff9b::203.0.113.226 64:ff9b::203.0.113.227 64:ff9b::203.0.113.228 64:ff9b::203.0.113.229
+s3.dualstack.us-east-1.amazonaws.com     A    198.51.100.85 198.51.100.86 198.51.100.87 198.51.100.88 198.51.100.89 198.51.100.90 198.51.100.91 198.51.100.92
+s3.dualstack.us-east-1.amazonaws.com     AAAA 2001:db8:8:1::100f:e44d 2001:db8:8:1::100f:e5bd 2001:db8:9::100f:b7c3 2001:db8:b:1::100f:f5ee 2001:db8:c:1::100f:d458 2001:db8:c:1::100f:d538 2001:db8:12::100f:ab85 2001:db8:1b::100f:a1e3
+ssm.us-east-1.amazonaws.com              A    198.51.100.93
+ssm.us-east-1.amazonaws.com              AAAA 64:ff9b::203.0.113.172
+ssm.us-east-1.api.aws                    A    198.51.100.94
+ssm.us-east-1.api.aws                    AAAA 2001:db8:7:60:aba2:53f3:ad7c:13e7
+checkip.amazonaws.com                    A    203.0.113.99 203.0.113.100 203.0.113.39 203.0.113.41 203.0.113.42 203.0.113.43 203.0.113.44 203.0.113.45
+checkip.amazonaws.com                    AAAA 64:ff9b::203.0.113.40 64:ff9b::203.0.113.43 64:ff9b::203.0.113.137 64:ff9b::203.0.113.39 64:ff9b::203.0.113.45 64:ff9b::203.0.113.38 64:ff9b::203.0.113.100 64:ff9b::203.0.113.138
+api6.ipify.org                           A    - (Name or service not known)
+api6.ipify.org                           AAAA 2001:db8:f:3c::4
+
+== HTTPS
+github.com                               200 via 64:ff9b::203.0.113.221  dns=0.000997s connect=0.002568s total=0.026646s
+api.github.com                           200 via 64:ff9b::203.0.113.127  dns=0.001600s connect=0.003486s total=0.020458s
+pypi.org                                 200 via 2001:db8:5::223  dns=0.000710s connect=0.001390s total=0.015927s
+registry-1.docker.io                     404 via 2001:db8:6:2:db8e:6f23:8bdd:25e9  dns=0.000746s connect=0.001465s total=0.016850s
+sts.us-east-1.amazonaws.com              302 via 64:ff9b::203.0.113.19  dns=0.002037s connect=0.003932s total=0.018969s
+sts.us-east-1.api.aws                    302 via 2001:db8:7:60:7a7e:82b:c042:dec6  dns=0.009586s connect=0.010702s total=0.023723s
+s3.us-east-1.amazonaws.com               307 via 64:ff9b::203.0.113.224  dns=0.002271s connect=0.003865s total=0.017984s
+s3.dualstack.us-east-1.amazonaws.com     307 via 2001:db8:b:1::100f:f5ee  dns=0.001188s connect=0.001763s total=0.016371s
+ssm.us-east-1.amazonaws.com              400 via 64:ff9b::203.0.113.172  dns=0.005649s connect=0.008341s total=0.023991s
+ssm.us-east-1.api.aws                    400 via 2001:db8:7:60:aba2:53f3:ad7c:13e7  dns=0.001491s connect=0.002648s total=0.015551s
+checkip.amazonaws.com                    200 via 64:ff9b::203.0.113.138  dns=0.001536s connect=0.002659s total=0.015181s
+api6.ipify.org                           200 via 2001:db8:f:3c::4  dns=0.001213s connect=0.057432s total=0.176386s
+
+== Address the internet sees
+$ curl -sS --max-time 10 https://api6.ipify.org
+2001:db8:1:10:dce5:b951:23a3:1b5d[exit 0, 193 ms]
+$ curl -sS --max-time 10 https://checkip.amazonaws.com
+198.51.100.95
+[exit 0, 22 ms]
+
+== GitHub
+github.com #1  200 via 64:ff9b::203.0.113.221  connect=0.002603s total=0.029972s
+github.com #2  200 via 64:ff9b::203.0.113.221  connect=0.002584s total=0.028431s
+github.com #3  200 via 64:ff9b::203.0.113.221  connect=0.002374s total=0.028018s
+github.com #4  200 via 64:ff9b::203.0.113.221  connect=0.002347s total=0.030701s
+github.com #5  200 via 64:ff9b::203.0.113.221  connect=0.003876s total=0.029505s
+github.com #6  200 via 64:ff9b::203.0.113.221  connect=0.002334s total=0.028935s
+$ timeout 30 git ls-remote --heads https://github.com/kerim-kilic/eks-ipv4-lab
+1cf6ad2721b8393e545fffaf1c714cfb45da8b86	refs/heads/dev
+b686ee50a47320dd31e2483fffb94d65600fca4c	refs/heads/main
+[exit 0, 91 ms]
+
+== AWS CLI, metadata endpoint as the SDK defaults it (IPv4)
+$ env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+arn:aws:sts::111122223333:assumed-role/EXAMPLE1
+[exit 0, 544 ms]
+
+== AWS CLI, default endpoints (metadata over IPv6)
+$ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+arn:aws:sts::111122223333:assumed-role/EXAMPLE1
+[exit 0, 587 ms]
+$ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+None
+None
+[exit 0, 609 ms]
+$ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[exit 0, 567 ms]
+
+== AWS CLI, dual-stack endpoints (metadata over IPv6)
+$ aws sts get-caller-identity --cli-connect-timeout 5 --cli-read-timeout 10 --query Arn --output text
+arn:aws:sts::111122223333:assumed-role/EXAMPLE1
+[exit 0, 550 ms]
+$ aws s3api list-objects-v2 --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-results-EXAMPLE1 --max-items 1 --query KeyCount --output text
+None
+None
+[exit 0, 598 ms]
+$ aws ssm get-parameter --cli-connect-timeout 5 --cli-read-timeout 10 --output text --query Parameter.Name --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+[exit 0, 583 ms]
+
+== S3 by name: probe object and a 20 MB download
+aws-ipv6-lab-probe-EXAMPLE2.s3.us-east-1.amazonaws.com A    198.51.100.96 198.51.100.97 198.51.100.98 198.51.100.99 198.51.100.100 198.51.100.101 198.51.100.102 198.51.100.103
+aws-ipv6-lab-probe-EXAMPLE2.s3.us-east-1.amazonaws.com AAAA 64:ff9b::203.0.113.230 64:ff9b::203.0.113.231 64:ff9b::203.0.113.232 64:ff9b::203.0.113.233 64:ff9b::203.0.113.234 64:ff9b::203.0.113.235 64:ff9b::203.0.113.236 64:ff9b::203.0.113.237
+aws-ipv6-lab-probe-EXAMPLE2.s3.dualstack.us-east-1.amazonaws.com A    198.51.100.104 198.51.100.105 203.0.113.240 198.51.100.106 198.51.100.107 198.51.100.108 198.51.100.109 198.51.100.110
+aws-ipv6-lab-probe-EXAMPLE2.s3.dualstack.us-east-1.amazonaws.com AAAA 2001:db8:9::100f:b74c 2001:db8:a:1::100f:ec69 2001:db8:a:1::100f:edc3 2001:db8:a:1::100f:ee79 2001:db8:a::100f:c7b5 2001:db8:c:1::100f:d5d7 2001:db8:12::100f:abd1 2001:db8:1c::100f:9db2
+-- default endpoint
+$ aws s3api get-object --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-probe-EXAMPLE2 --key probe.txt /dev/null --query ContentLength --output text
+35
+[exit 0, 586 ms]
+$ s3get s3://aws-ipv6-lab-results-EXAMPLE1/testdata/20mb.bin
+[exit 0, 870 ms]
+-- dual-stack endpoint
+$ aws s3api get-object --cli-connect-timeout 5 --cli-read-timeout 10 --bucket aws-ipv6-lab-probe-EXAMPLE2 --key probe.txt /dev/null --query ContentLength --output text
+35
+[exit 0, 610 ms]
+$ s3get s3://aws-ipv6-lab-results-EXAMPLE1/testdata/20mb.bin
+[exit 0, 773 ms]
+
+== ECR: where the layers come from, and a 40 MB pull through each registry name
+-- 111122223333.dkr.ecr.us-east-1.amazonaws.com  at 12:57:28
+111122223333.dkr.ecr.us-east-1.amazonaws.com A    203.0.113.62
+111122223333.dkr.ecr.us-east-1.amazonaws.com AAAA 64:ff9b::203.0.113.147
+layer redirect to: prod-us-east-1-starport-layer-bucket.s3.us-east-1.amazonaws.com
+prod-us-east-1-starport-layer-bucket.s3.us-east-1.amazonaws.com A    198.51.100.111 198.51.100.112 198.51.100.113 198.51.100.114 198.51.100.115 198.51.100.116 198.51.100.117 198.51.100.118
+prod-us-east-1-starport-layer-bucket.s3.us-east-1.amazonaws.com AAAA 64:ff9b::203.0.113.238 64:ff9b::203.0.113.239 64:ff9b::203.0.113.240 64:ff9b::203.0.113.241 64:ff9b::203.0.113.242 64:ff9b::203.0.113.243 64:ff9b::203.0.113.244 64:ff9b::203.0.113.245
+$ docker_pull 111122223333.dkr.ecr.us-east-1.amazonaws.com
+111122223333.dkr.ecr.us-east-1.amazonaws.com/aws-ipv6-lab-test:latest
+[exit 0, 1176 ms]
+-- 111122223333.dkr-ecr.us-east-1.on.aws  at 12:58:40
+111122223333.dkr-ecr.us-east-1.on.aws    A    203.0.113.118
+111122223333.dkr-ecr.us-east-1.on.aws    AAAA 2001:db8:13:6:cb83:d8f0:8ab:6c58
+layer redirect to: prod-us-east-1-starport-layer-bucket.s3.dualstack.us-east-1.amazonaws.com
+prod-us-east-1-starport-layer-bucket.s3.dualstack.us-east-1.amazonaws.com A    198.51.100.119 198.51.100.120 198.51.100.121 198.51.100.122 198.51.100.123 198.51.100.124 198.51.100.125 198.51.100.126
+prod-us-east-1-starport-layer-bucket.s3.dualstack.us-east-1.amazonaws.com AAAA 2001:db8:8:1::100f:e47a 2001:db8:9::100f:b79d 2001:db8:a:1::100f:ee89 2001:db8:a:1::100f:eed3 2001:db8:a::100f:c788 2001:db8:b:1::100f:f68a 2001:db8:c:1::100f:d7e4 2001:db8:15::100f:a342
+$ docker_pull 111122223333.dkr-ecr.us-east-1.on.aws
+111122223333.dkr-ecr.us-east-1.on.aws/aws-ipv6-lab-test:latest
+[exit 0, 1057 ms]
+
+== Packages and time
+$ timeout 120 dnf -q makecache --refresh
+[exit 0, 923 ms]
+$ chronyc -n sources
+MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+===============================================================================
+^* fd00:ec2::123                 3   4   377     9  +3498ns[+4225ns] +/-  625us
+^- 2001:db8:16:2:6a8a:b72:c16e:db31   4   8   377   105    -54us[  -39us] +/-  796us
+^- 2001:db8:16:2:2a6f:3bec:e00b:8fb9   4   8   377   107    -52us[  -49us] +/-  811us
+^- 2001:db8:16:1:2f65:3de:4135:a6a4   4   8   377   107   -108us[ -105us] +/-  732us
+^- 2001:db8:16:0:46e8:2cd4:84f2:c189   4   8   377    46  -5258ns[+5970ns] +/-  567us
+[exit 0, 3 ms]
+
+finished=20261108T125842Z
