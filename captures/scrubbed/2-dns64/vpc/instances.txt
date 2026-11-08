@@ -1,0 +1,11 @@
+---------------------------------------------------------
+|                   DescribeInstances                   |
++----------+--------------------------------------------+
+|  Hostname|  i-EXAMPLE1.ec2.internal          |
+|  IPv4    |  None                                      |
+|  IPv6    |  2001:db8:1:10:dce5:b951:23a3:1b5d   |
+|  ImdsIPv6|  enabled                                   |
+|  ImdsTags|  enabled                                   |
+|  Name    |  aws-ipv6-lab-client                       |
+|  Type    |  t3.micro                                  |
++----------+--------------------------------------------+
