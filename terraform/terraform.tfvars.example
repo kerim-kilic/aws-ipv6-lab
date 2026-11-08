@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (git-ignored) and fill in.
+
+# The account to run the lab in. Terraform refuses to run against any other.
+allowed_account_id = "111122223333"
+
+# aws_region = "us-east-1"

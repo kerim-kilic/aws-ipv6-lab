@@ -1,0 +1,47 @@
+#!/bin/bash
+# Installs the checks and runs them every ${interval}, starting a minute after boot. Rendered by Terraform.
+set -euo pipefail
+
+echo '${checks_b64}' | base64 -d >/usr/local/bin/lab-checks
+chmod 0755 /usr/local/bin/lab-checks
+
+cat >/etc/lab-checks.env <<'EOF'
+BUCKET=${bucket}
+PROBE_BUCKET=${probe}
+ROLE=${role}
+ECR_REPO=${ecr_repo}
+REGISTRY_ID=${registry}
+REGION=${region}
+EOF
+
+# Docker and Git for the ECR and GitHub checks. Amazon Linux 2023's repositories work over IPv6, so this works in
+# every step.
+dnf -y -q install docker git
+systemctl enable --now docker
+
+cat >/etc/systemd/system/lab-checks.service <<'EOF'
+[Unit]
+Description=IPv6 lab checks
+
+[Service]
+Type=oneshot
+Environment=HOME=/root
+ExecStart=/usr/local/bin/lab-checks
+StandardOutput=journal+console
+StandardError=journal+console
+EOF
+
+cat >/etc/systemd/system/lab-checks.timer <<'EOF'
+[Unit]
+Description=Run the IPv6 lab checks every ${interval}
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=${interval}
+
+[Install]
+WantedBy=timers.target
+EOF
+
+systemctl daemon-reload
+systemctl enable --now lab-checks.timer

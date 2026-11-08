@@ -1,0 +1,23 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+!terraform/steps/*.tfvars
+crash.log
+# Plan files can contain state values
+*.tfplan
+tfplan
+
+# Raw lab output holds account, resource and IP details: only scrubbed output is committed
+captures/raw/
+
+# Apply logs from a session hold resource IDs
+captures/*.log
+
+# Python
+__pycache__/
+
+# Earlier runs kept for reference, not published
+captures/archive-*/
