@@ -1,0 +1,6 @@
+# Lets "# shellcheck source=env.sh" resolve next to each script.
+source-path=SCRIPTDIR
+external-sources=true
+
+# Single quotes are deliberate: JMESPath queries for the AWS CLI.
+disable=SC2016
