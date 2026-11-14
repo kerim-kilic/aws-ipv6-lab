@@ -11,7 +11,9 @@ added next to IPv4, and what changes when they do.
 Everything is built in one sitting and destroyed at the end. The captured output from my own runs is in
 [`captures/scrubbed/`](captures/scrubbed/), with account, resource and address details replaced. Steps 1 to 4 come from
 the last of three runs on the same day, with all the checks below; step 5 comes from the first run, before the S3, ECR
-and GitHub checks existed.
+and GitHub checks existed. Steps 6 to 8 come from two later runs in another sandbox account, and keep every check run's
+report: in steps 6 and 8, the first run overlaps the instances installing their packages, so its NAT gateway byte counts
+include that.
 
 > **This costs money while it runs.** A NAT gateway with its public IPv4 address and a `t3.micro` come to about
 > $0.06 an hour in `us-east-1`, plus a little for data; step 4's four interface endpoints add about $0.04 an hour, and
