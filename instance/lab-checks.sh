@@ -4,6 +4,7 @@
 # "connects, then hangs" is one of the results.
 # Installed by user-data.sh.tftpl; settings come from /etc/lab-checks.env (BUCKET, PROBE_BUCKET, REGION, ROLE,
 # ECR_REPO, REGISTRY_ID). ROLE=control skips the large downloads, so the NAT gateway's byte counts stay the client's.
+# ROLE=ipv4-rules (steps 6 to 8) skips them too, and adds one AWS CLI call with the CLI's own default timeouts.
 set -uo pipefail
 
 # shellcheck source=/dev/null
@@ -62,6 +63,23 @@ for family, label in ((socket.AF_INET, "A"), (socket.AF_INET6, "AAAA")):
         print(f"{host:40} {label:4} {' '.join(found)}")
     except socket.gaierror as e:
         print(f"{host:40} {label:4} - ({e.strerror})")
+PY
+}
+
+# The order getaddrinfo returns addresses in, for any address family: the order a client that tries one address at a
+# time (the AWS CLI and SDKs, for example) connects in. Clients with Happy Eyeballs (curl, browsers) race the first two.
+order() {
+  python3 - "$1" <<'PY'
+import socket, sys
+host = sys.argv[1]
+try:
+    found = []
+    for ai in socket.getaddrinfo(host, 443, socket.AF_UNSPEC, socket.SOCK_STREAM):
+        if ai[4][0] not in found:
+            found.append(ai[4][0])
+    print(f"{host:40} {' '.join(found)}")
+except socket.gaierror as e:
+    print(f"{host:40} - ({e.strerror})")
 PY
 }
 
@@ -144,6 +162,9 @@ report=/var/lib/lab-checks/$ts.txt
   section "DNS"
   for host in "${HOSTS[@]}"; do lookup "$host"; done
 
+  section "Address order (what a client tries first)"
+  for host in "${HOSTS[@]}"; do order "$host"; done
+
   section "HTTPS"
   for host in "${HOSTS[@]}"; do printf '%-40s ' "$host"; https "$host"; done
 
@@ -158,7 +179,13 @@ report=/var/lib/lab-checks/$ts.txt
   run env AWS_USE_DUALSTACK_ENDPOINT=true aws sts get-caller-identity "${CLI_TIMEOUTS[@]}" --query Arn --output text
 
   section "AWS CLI, default endpoints (metadata over IPv6)"
-  export AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE=IPv6
+  # Except behind the IPv4-only security group, where the metadata service stays on IPv4 so that only the API calls
+  # differ. The "Instance metadata" section above shows whether the IPv6 endpoint answers there.
+  if [[ $ROLE == ipv4-rules ]]; then
+    export AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE=IPv4
+  else
+    export AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE=IPv6
+  fi
   run aws sts get-caller-identity "${CLI_TIMEOUTS[@]}" --query Arn --output text
   run aws s3api list-objects-v2 "${CLI_TIMEOUTS[@]}" --bucket "$BUCKET" --max-items 1 --query 'KeyCount' --output text
   run aws ssm get-parameter "${CLI_TIMEOUTS[@]}" --output text --query Parameter.Name \
@@ -171,6 +198,14 @@ report=/var/lib/lab-checks/$ts.txt
   run aws ssm get-parameter "${CLI_TIMEOUTS[@]}" --output text --query Parameter.Name \
     --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
   unset AWS_USE_DUALSTACK_ENDPOINT
+
+  if [[ $ROLE == ipv4-rules ]]; then
+  # Without the lab's short timeouts: how long the CLI takes when every IPv6 address it tries first is dropped by the
+  # security group. Capped at five minutes so the next run isn't held up.
+  section "AWS CLI, dual-stack endpoint, the CLI's default timeouts"
+  run env AWS_USE_DUALSTACK_ENDPOINT=true timeout 300 aws s3api list-objects-v2 --bucket "$BUCKET" --max-items 1 \
+    --query 'KeyCount' --output text
+  fi
 
   if [[ $ROLE == client ]]; then
   # The probe bucket only allows reads through the S3 gateway endpoint once step 4 adds it, so a read that works there
@@ -223,6 +258,11 @@ report=/var/lib/lab-checks/$ts.txt
 } 2>&1 | tee "$report"
 
 # Over the dual-stack endpoint, which needs nothing but IPv6 and the egress-only gateway. Fails on an instance that
-# can't reach the metadata service over IPv6; its report is still on the console (aws ec2 get-console-output).
-AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE=IPv6 AWS_USE_DUALSTACK_ENDPOINT=true \
+# can't reach the metadata service over IPv6; its report is still on the console (aws ec2 get-console-output). An
+# instance whose security group drops IPv6 (ROLE=ipv4-rules) uploads over IPv4 instead.
+if [[ $ROLE == ipv4-rules ]]; then
   aws s3 cp "${CLI_TIMEOUTS[@]}" --only-show-errors "$report" "s3://$BUCKET/$step/$name/$ts.txt"
+else
+  AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE=IPv6 AWS_USE_DUALSTACK_ENDPOINT=true \
+    aws s3 cp "${CLI_TIMEOUTS[@]}" --only-show-errors "$report" "s3://$BUCKET/$step/$name/$ts.txt"
+fi
