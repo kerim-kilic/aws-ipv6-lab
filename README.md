@@ -5,8 +5,9 @@
 A small, short-lived lab that puts an instance in an IPv6-only subnet on AWS and adds the pieces it needs to reach an
 internet that is still half IPv4, one at a time: an egress-only internet gateway, DNS64, and a route to the NAT gateway
 for NAT64. At every step the instance reports what it can resolve and reach, including AWS's own APIs through their
-default and dual-stack endpoints. Two more steps test the dual-stack subnet on its own, the way most teams start: IPv6
-added next to IPv4, and what changes when they do.
+default and dual-stack endpoints. Three more steps test the dual-stack subnet on its own, the way most teams start:
+IPv6 added next to IPv4, what changes when they do, and whether an S3 gateway endpoint still keeps S3 and ECR traffic
+off the NAT gateway. It does in the dual-stack subnet, and doesn't in the IPv6-only one.
 
 Everything is built in one sitting and destroyed at the end. The captured output from my own runs is in
 [`captures/scrubbed/`](captures/scrubbed/), with account, resource and address details replaced. Steps 1 to 4 come from
