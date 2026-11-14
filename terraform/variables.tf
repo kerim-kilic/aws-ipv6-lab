@@ -75,3 +75,27 @@ variable "enable_control_instance" {
   type        = bool
   default     = false
 }
+
+variable "enable_ipv6_only_client" {
+  description = "Run the client instance in the IPv6-only subnet. The dual-stack steps turn it off, so the NAT gateway's byte counts come from the dual-stack instances alone."
+  type        = bool
+  default     = true
+}
+
+variable "enable_dual_stack_instances" {
+  description = "Add two instances to the dual-stack subnet: one that runs every check, and one whose security group only allows IPv4 out (steps 6 to 8)."
+  type        = bool
+  default     = false
+}
+
+variable "enable_dual_stack_dns64" {
+  description = "DNS64 on the dual-stack subnet, with no route for 64:ff9b::/96 (step 7)."
+  type        = bool
+  default     = false
+}
+
+variable "enable_dual_stack_s3_endpoint" {
+  description = "Add an S3 gateway endpoint of type dualstack to the dual-stack subnet's route table (step 8)."
+  type        = bool
+  default     = false
+}

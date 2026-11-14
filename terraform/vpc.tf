@@ -109,13 +109,16 @@ resource "aws_route_table_association" "workload" {
   route_table_id = aws_route_table.workload.id
 }
 
-# Dual-stack, without DNS64: the control instance reaches IPv4 hosts over plain IPv4 through the same NAT gateway, to
-# tell problems that come from NAT64 apart from problems at the other end. Free when no instance runs in it.
+# Dual-stack, the way a private subnet looks once IPv6 is added to it: 0.0.0.0/0 to the NAT gateway, ::/0 to the
+# egress-only internet gateway. In step 3 the control instance here reaches IPv4 hosts over plain IPv4, to tell problems
+# that come from NAT64 apart from problems at the other end; steps 6 to 8 test the subnet itself. Free when no instance
+# runs in it.
 resource "aws_subnet" "control" {
   vpc_id            = aws_vpc.lab.id
   availability_zone = local.azs[0]
   cidr_block        = local.control_cidr
   ipv6_cidr_block   = local.control_ipv6_cidr
+  enable_dns64      = var.enable_dual_stack_dns64
 
   tags = { Name = "${var.name}-control-${local.azs[0]}" }
 }
