@@ -26,6 +26,7 @@ resource "aws_security_group" "instance" {
 }
 
 # ::/0 includes 64:ff9b::/96. A security group with narrower outbound rules has to allow that prefix for NAT64 to work.
+#trivy:ignore:AWS-0104 Open egress on purpose: the lab measures which routes outbound traffic takes.
 resource "aws_vpc_security_group_egress_rule" "all_ipv6" {
   security_group_id = aws_security_group.instance.id
   description       = "All outbound IPv6"
@@ -35,6 +36,7 @@ resource "aws_vpc_security_group_egress_rule" "all_ipv6" {
 
 # For the control instance, which has an IPv4 address. A security group's IPv4 and IPv6 rules are separate: without
 # this one, the control instance reaches everything over IPv6 and nothing over IPv4.
+#trivy:ignore:AWS-0104 Open egress on purpose: the lab measures which routes outbound traffic takes.
 resource "aws_vpc_security_group_egress_rule" "all_ipv4" {
   security_group_id = aws_security_group.instance.id
   description       = "All outbound IPv4"
@@ -51,6 +53,7 @@ resource "aws_security_group" "ipv4_rules" {
   tags        = { Name = "${var.name}-ipv4-rules" }
 }
 
+#trivy:ignore:AWS-0104 Open egress on purpose: the lab measures which routes outbound traffic takes.
 resource "aws_vpc_security_group_egress_rule" "ipv4_rules_all_ipv4" {
   security_group_id = aws_security_group.ipv4_rules.id
   description       = "All outbound IPv4"

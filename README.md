@@ -161,7 +161,12 @@ This is a lab, not a reference architecture:
 
 - one NAT gateway for both zones;
 - local Terraform state;
-- the instance profile has `AmazonSSMManagedInstanceCore`, as a way in through Session Manager once NAT64 works.
+- the instance profile has `AmazonSSMManagedInstanceCore`, as a way in through Session Manager once NAT64 works;
+- the security groups allow all outbound traffic, since where that traffic goes is what the lab measures;
+- the S3 buckets and the ECR repository keep the defaults: no access logs, versioning, image scanning or customer
+  managed KMS keys, and the test image's tag is mutable; there are no VPC Flow Logs either. Each adds cost or steps
+  and nothing to what the lab measures. These are accepted in the Terraform with `#trivy:ignore` comments, so the
+  Trivy scan in CI still catches anything new.
 
 ## Licence
 

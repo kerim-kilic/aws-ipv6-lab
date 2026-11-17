@@ -1,0 +1,11 @@
+# zizmor configuration (read automatically from .github/zizmor.yml).
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # Actions from GitHub, AWS and HashiCorp stay on major tags (a deliberate choice; Dependabot keeps them current).
+        # Any other publisher's action must be pinned to a full commit SHA.
+        "actions/*": ref-pin
+        "aws-actions/*": ref-pin
+        "hashicorp/*": ref-pin
+        "*": hash-pin

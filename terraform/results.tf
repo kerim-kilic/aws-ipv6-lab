@@ -1,5 +1,9 @@
 # The instances upload their check results here over S3's dual-stack endpoint, which has an IPv6 address and so works
 # with nothing but the egress-only internet gateway. That way the results arrive even in the steps where NAT64 doesn't.
+# Accepted for a short-lived lab (see the README's "Shortcuts taken"): no access logs, no versioning, default encryption.
+#trivy:ignore:AWS-0089
+#trivy:ignore:AWS-0090
+#trivy:ignore:AWS-0132
 resource "aws_s3_bucket" "results" {
   bucket_prefix = "${var.name}-results-"
   force_destroy = true # results are copied to captures/raw before the destroy
@@ -22,6 +26,10 @@ resource "aws_s3_bucket_ownership_controls" "results" {
 }
 
 # A small object the checks read through each S3 name. In step 4 its bucket policy shows which route a request took.
+# Accepted for a short-lived lab (see the README's "Shortcuts taken"): no access logs, no versioning, default encryption.
+#trivy:ignore:AWS-0089
+#trivy:ignore:AWS-0090
+#trivy:ignore:AWS-0132
 resource "aws_s3_bucket" "probe" {
   bucket_prefix = "${var.name}-probe-"
   force_destroy = true
