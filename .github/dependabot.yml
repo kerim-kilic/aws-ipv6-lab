@@ -1,4 +1,6 @@
 # Monthly pull requests for new releases: the GitHub Actions grouped into one, and the AWS provider.
+# Cooldown: a new release is only proposed once it is 7 days old, so a compromised release that is pulled quickly never
+# reaches this repository.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -6,6 +8,8 @@ updates:
     target-branch: "dev"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
     groups:
       github-actions:
         patterns: ["*"]
@@ -15,3 +19,5 @@ updates:
     target-branch: "dev"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7

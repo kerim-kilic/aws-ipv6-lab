@@ -1,3 +1,5 @@
+# Accepted for a short-lived lab (see the README's "Shortcuts taken"): no VPC Flow Logs.
+#trivy:ignore:AWS-0178
 resource "aws_vpc" "lab" {
   cidr_block                       = var.vpc_cidr
   assign_generated_ipv6_cidr_block = true
