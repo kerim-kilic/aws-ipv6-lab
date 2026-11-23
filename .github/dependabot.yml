@@ -1,4 +1,4 @@
-# Monthly pull requests for new releases: the GitHub Actions grouped into one, and the AWS provider.
+# Weekly pull requests for new releases: the GitHub Actions grouped into one, and the AWS provider.
 # Cooldown: a new release is only proposed once it is 7 days old, so a compromised release that is pulled quickly never
 # reaches this repository.
 version: 2
@@ -7,7 +7,7 @@ updates:
     directory: "/"
     target-branch: "dev"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     cooldown:
       default-days: 7
     groups:
@@ -18,6 +18,6 @@ updates:
     directory: "/terraform"
     target-branch: "dev"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     cooldown:
       default-days: 7
